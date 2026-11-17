@@ -24,7 +24,7 @@ Thiết bị hiện dùng SIM 4G để gửi dữ liệu theo đường:
 Sau khi web chạy được:
 
 1. Bấm đúp **Ket-noi-thiet-bi.cmd**. File này tải Cloudflare từ kho chính thức, kiểm tra SHA-256 rồi mở tunnel tới web. Không cần quyền quản trị.
-2. Đợi hiện địa chỉ `https://...trycloudflare.com`. Script sẽ cập nhật địa chỉ này và khóa thiết bị vào bản firmware trong thư mục `firmware\ESP32_Firmware` của dự án.
+2. Đợi hiện địa chỉ `https://...trycloudflare.com`. Script sẽ tạo/cập nhật `firmware\ESP32_Firmware\device_config.local.h` với địa chỉ này và khóa thiết bị. Header riêng này được Git bỏ qua.
 3. Mở **firmware\ESP32_Firmware\ESP32_Firmware.ino** trong Arduino IDE, chọn đúng board ESP32 và cổng COM của thiết bị rồi Upload. Bản firmware gốc trong Downloads vẫn giữ nguyên.
 4. Giữ cả hai cửa sổ chạy web và Cloudflare mở. Mở web, đợi dữ liệu; bấm thử nút SOS trên thiết bị và kiểm tra mục **Cảnh báo & sự kiện**.
 
@@ -32,7 +32,7 @@ Nếu báo chưa có cổng COM, kiểm tra thiết bị đã cắm cáp USB tru
 
 Địa chỉ `offering-detector-racing-kits.trycloudflare.com` trong bản firmware đã nhận là địa chỉ cũ; cần dùng tunnel đang chạy trên máy này.
 
-Trong firmware, ba dòng cần khớp với web là:
+Trong header `device_config.local.h`, ba dòng cần khớp với web là (script tự tạo):
 
 ```cpp
 const char* DEVICE_ID = "ngoc-01";
@@ -56,4 +56,6 @@ Theo mã firmware hiện có, thiết bị gửi chỉ số khoảng mỗi 15 gi
 - `iot_ngoc.sqlite3`: dữ liệu nhịp tim, GPS và sự kiện đã nhận. Không xóa nếu muốn giữ lịch sử.
 - `app.py`, `templates`, `static`: mã nguồn website của người làm sản phẩm.
 
-Không cần chạy file `app.cpython-313.pyc`. Giữ nguyên bản hướng dẫn gốc để đối chiếu.
+Không cần chạy file `app.cpython-313.pyc`. Hướng dẫn gốc trong repo đã thay các khóa bằng giá trị mẫu; bản sao trước thay đổi nằm trong `.runtime/backups/`.
+
+Chạy `Kiem-tra.cmd` để kiểm tra phần mềm trên database tạm. Tiến độ cải tổ: [docs/refactor-plan.md](docs/refactor-plan.md).

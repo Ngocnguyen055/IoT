@@ -6,3 +6,9 @@ __pycache__/
 *.sqlite3-*
 config.local.json
 *.log
+.env
+.env.*
+!.env.example
+firmware/ESP32_Firmware/device_config.local.h
+.coverage
+htmlcov/

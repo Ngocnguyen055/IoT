@@ -2,11 +2,13 @@ import os, sqlite3, time
 from contextlib import contextmanager
 from functools import wraps
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for
+from project_config import application_config
 
+_settings = application_config()
 app = Flask(__name__)
-app.secret_key = os.environ.get('SESSION_SECRET', 'a29243364ce0b85893337a266970a71405522a8ccc0bd25de88cba497f6a216b')
-DEVICE_KEY = os.environ.get('DEVICE_KEY', '3445fc58fe14088666f4c8e49ea8a3c167f4f8df72004eeacbcf771f18c820ce')
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'ngocnguyen123')
+app.secret_key = _settings['SESSION_SECRET']
+DEVICE_KEY = _settings['DEVICE_KEY']
+ADMIN_PASSWORD = _settings['ADMIN_PASSWORD']
 DB = os.environ.get('DB_PATH', 'iot_ngoc.sqlite3')
 
 @contextmanager

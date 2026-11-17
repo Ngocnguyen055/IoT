@@ -1,38 +1,13 @@
 """Start the SOS website with persistent local configuration."""
 
 import argparse
-import json
 import os
-from pathlib import Path
-import re
-import secrets
 import threading
 import urllib.error
 import urllib.request
 import webbrowser
 
-ROOT = Path(__file__).resolve().parent
-CONFIG_PATH = ROOT / "config.local.json"
-
-
-def load_config():
-    if not CONFIG_PATH.exists():
-        # Match the existing ESP32 firmware's key from the supplied guide.
-        guide = (ROOT / "Hướng dẫn chạy sản phẩm.txt").read_text(encoding="utf-8-sig")
-        match = re.search(r'set "DEVICE_KEY=([^"\r\n]+)"', guide)
-        config = {
-            "ADMIN_PASSWORD": "SOS-" + secrets.token_hex(6),
-            "DEVICE_KEY": match.group(1) if match else secrets.token_hex(32),
-            "SESSION_SECRET": secrets.token_hex(32),
-        }
-        with CONFIG_PATH.open("x", encoding="utf-8") as handle:
-            json.dump(config, handle, ensure_ascii=False, indent=2)
-            handle.write("\n")
-    config = json.loads(CONFIG_PATH.read_text(encoding="utf-8-sig"))
-    for name in ("ADMIN_PASSWORD", "DEVICE_KEY", "SESSION_SECRET"):
-        if not isinstance(config.get(name), str) or not config[name]:
-            raise ValueError(f"Missing or invalid {name} in {CONFIG_PATH.name}")
-    return config
+from project_config import ROOT, load_config
 
 
 def main():

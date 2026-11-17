@@ -7,10 +7,14 @@ import re
 import subprocess
 import urllib.error
 import urllib.request
+from urllib.parse import urlsplit
+
+from project_config import load_config
 
 ROOT = Path(__file__).resolve().parent
 RUNTIME = ROOT / ".runtime"
 FIRMWARE = ROOT / "firmware" / "ESP32_Firmware" / "ESP32_Firmware.ino"
+FIRMWARE_CONFIG = FIRMWARE.with_name("device_config.local.h")
 
 
 def download_cloudflared():
@@ -46,15 +50,21 @@ def prepare_firmware(url):
     if not FIRMWARE.exists():
         print("Chua co ban firmware trong thu muc firmware; can sua SERVER_BASE thu cong.")
         return
-    config = json.loads((ROOT / "config.local.json").read_text(encoding="utf-8-sig"))
-    source = FIRMWARE.read_text(encoding="utf-8-sig")
-    for name, value in [("SERVER_BASE", url), ("DEVICE_KEY", config["DEVICE_KEY"])]:
-        replacement = f"const char* {name} = {json.dumps(value)};"
-        source, count = re.subn(rf'const char\* {name}\s*=\s*"[^"\r\n]*";', lambda _: replacement, source)
-        if count != 1:
-            raise RuntimeError("Khong tim thay dung mot dong " + name + " trong firmware.")
-    FIRMWARE.write_text(source, encoding="utf-8")
+    url = url.strip().rstrip("/")
+    parsed = urlsplit(url)
+    if (parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password
+            or parsed.query or parsed.fragment or any(c.isspace() or c in '\"\\' for c in url)):
+        raise ValueError("SERVER_BASE must be an HTTPS URL without whitespace or credentials")
+    config = load_config()
+    device_id = config.get("DEVICE_ID", "ngoc-01")
+    if not isinstance(device_id, str) or not 1 <= len(device_id) <= 64:
+        raise ValueError("DEVICE_ID must be a string of 1 to 64 characters")
+    values = {"DEVICE_ID": device_id, "DEVICE_KEY": config["DEVICE_KEY"], "SERVER_BASE": url}
+    lines = ["#pragma once", "// Generated locally by connect_device.py. Keep this file out of Git."]
+    lines.extend(f"const char* {name} = {json.dumps(value)};" for name, value in values.items())
+    FIRMWARE_CONFIG.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\nDA CHUAN BI FIRMWARE: " + str(FIRMWARE), flush=True)
+    print("Cau hinh rieng: " + FIRMWARE_CONFIG.name, flush=True)
     print("Mo file nay bang Arduino IDE, chon board ESP32/cung COM roi Upload.", flush=True)
     print("Giu ca cua so web va cua so Cloudflare nay mo.\n", flush=True)
 
@@ -67,8 +77,6 @@ def main():
                 raise RuntimeError("Web chua tra ve trang dang nhap.")
     except (urllib.error.URLError, OSError) as error:
         raise RuntimeError("Hay mo Chay-web.cmd truoc, sau do chay lai file nay.") from error
-
-    from run_local import load_config
 
     load_config()
     executable = download_cloudflared()

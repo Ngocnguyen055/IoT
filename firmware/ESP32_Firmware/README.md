@@ -12,7 +12,7 @@
 ## Nạp đúng bản đã sửa
 
 1. Giữ Chay-web.cmd và Ket-noi-thiet-bi.cmd đang chạy. Không cần mở lại tunnel chỉ để nạp bản sửa này.
-2. Đóng cửa sổ Arduino đang giữ bản code cũ, rồi mở lại file ESP32_Firmware.ino tại thư mục này từ ổ đĩa. File modem_protocol.h phải ở cùng thư mục.
+2. Đóng cửa sổ Arduino đang giữ bản code cũ, rồi mở lại file ESP32_Firmware.ino tại thư mục này từ ổ đĩa. File modem_protocol.h và device_config.local.h phải ở cùng thư mục.
 3. Chọn ESP32 Dev Module và cổng USB của ESP32, bấm Upload.
 4. Mở Serial Monitor ở 115200 baud. Bản mới phải có dòng:
 
@@ -39,5 +39,11 @@ Từ thư mục dự án:
 Bộ kiểm tra dùng trực tiếp các hàm xử lý phản hồi/hàng đợi từ firmware: URL có khoảng trắng, phản hồi UART chia nhỏ, timeout vẫn phục vụ cảm biến, giữ số đo cảnh báo và bảng pin. Sau đó biên dịch sketch bằng bộ công cụ ESP32 đã cài. Đây là kiểm tra phần mềm; vẫn cần nạp và kiểm tra với phần cứng thực.
 
 Hàng đợi cảnh báo hiện nằm trong RAM, giữ qua lần modem thử kết nối lại nhưng không giữ qua lần mất nguồn/reset ESP32.
+
+## Cấu hình riêng từ giai đoạn 1
+
+`DEVICE_ID`, `DEVICE_KEY` và `SERVER_BASE` nằm trong `device_config.local.h`, được `Ket-noi-thiet-bi.cmd` tạo/cập nhật và Git bỏ qua. `device_config.example.h` là mẫu để đọc, không phải cấu hình được nạp. Trên checkout mới, chạy web và script kết nối để có header thật trước khi biên dịch.
+
+Việc tách header giữ nguyên giá trị cấu hình trên máy tại thời điểm cải tổ. Thuật toán cảm biến và giao thức gửi dữ liệu không thay đổi ở giai đoạn này.
 
 Tham khảo thuật toán: [SparkFun Example8_SPO2](https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library/blob/master/examples/Example8_SPO2/Example8_SPO2.ino).
