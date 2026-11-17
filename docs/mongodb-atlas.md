@@ -51,6 +51,8 @@ Nếu lỗi, kiểm tra cluster đã sẵn sàng, IP máy đã được cho phé
 
 Repository dùng collection thông thường để giữ ID và transaction hiện có. `_id` có chỉ mục duy nhất; thêm chỉ mục `(device_id, ts)` và `(device_id, _id giảm dần)` cho truy vấn lịch sử/thứ tự.
 
+Tính năng Lịch sử bổ sung partial index dành cho sự kiện và các dòng có GPS hợp lệ. Truy vấn sự kiện dùng cursor theo ID và giới hạn 21 dòng để quyết định còn trang tiếp; không dùng `skip`. `Kiem-tra-lich-su.cmd` kiểm tra phân trang và `explain` trên Atlas thật, sau đó bổ sung index vào database ứng dụng. Xem [lịch sử và hiệu năng](alert-history.md).
+
 Lưu số đo, cấp ID và xác nhận lệnh remote nằm trong cùng transaction. Atlas dùng replica set hỗ trợ transaction; repository từ chối máy chủ standalone thiếu hỗ trợ này. API tiếp tục trả NONE/LOCATE dưới dạng plain text và giữ schema JSON hiện tại. Lỗi lưu trữ trả HTTP 503 `database unavailable`, không đưa chuỗi kết nối vào phản hồi. Xem [PyMongo transactions](https://www.mongodb.com/docs/languages/python/pymongo-driver/current/crud/transactions/).
 
 Kết nối được dùng chung theo vòng đời ứng dụng với pool giới hạn; không đóng client sau từng HTTP request. Luồng ghi có giới hạn thời gian tổng thể 10 giây qua PyMongo timeout context.

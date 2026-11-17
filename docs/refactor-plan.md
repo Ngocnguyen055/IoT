@@ -146,4 +146,20 @@ Firmware sẽ được chia module trong một đợt riêng sau khi web/databas
 - Thử trong phòng đã đạt và giai đoạn 6 đã lưu tại `d6d42df`.
 - Chủ dự án sẽ thử GPS ngoài trời sau; phần đó còn được ghi là chưa xác nhận.
 
+## Bổ sung Trang chủ/Lịch sử sau sáu giai đoạn
+
+- Đã triển khai sidebar, Trang chủ với 8 sự kiện và Lịch sử phân trang 20 sự kiện theo cursor/snapshot.
+- Thêm API đọc gọn, partial index cho sự kiện/GPS; giữ API thiết bị, schema, dữ liệu và firmware.
+- `Kiem-tra.cmd --no-pause`: 120 kiểm thử Python và 22 kiểm thử JavaScript đạt; một kiểm thử transaction Atlas được bỏ qua trong lượt cục bộ như trước.
+- `Kiem-tra-lich-su.cmd` đã đạt trên Atlas thật ngày 18/11/2026 (giờ Việt Nam): 10.000 telemetry/60 sự kiện trong database tạm; phân trang hai chiều và snapshot đạt. Mỗi truy vấn lịch sử đọc 21 keys/21 documents cho giới hạn 21; vị trí cuối đọc 1/1, thiết bị không có GPS đọc 0/0. Kế hoạch dùng IXSCAN, không có COLLSCAN hoặc sort chặn. Database tạm đã dọn, index database ứng dụng đã được đối chiếu; explain lịch sử thật cũng đọc 21/21. Kết quả ở `.runtime/history-query-check.json`. Đây chưa phải benchmark một triệu bản ghi.
+- Chủ dự án đã mở lại web và xác nhận giao diện Trang chủ/Lịch sử cùng nút Trước/Sau hoạt động bình thường trên trình duyệt sau cập nhật. Đợt bổ sung lịch sử đã hoàn tất kiểm tra phần mềm, Atlas thật và giao diện.
+- Cấu hình riêng, file SQLite cũ và firmware/header local có mã băm trùng bản sao lưu trước thay đổi.
+
+## Sửa nền bản đồ sau cập nhật lịch sử
+
+- Chuyển mặc định sang `tile.openstreetmap.de` sau khi chủ dự án xác nhận ảnh mẫu nguồn này mở được, còn nguồn `.org` không hiện trên máy. Giữ lựa chọn nguồn chính với URL chuẩn.
+- Thêm đổi nguồn, tải lại nền, thông báo lỗi ảnh và cập nhật kích thước Leaflet khi bố cục đổi; giữ nguyên marker, hành trình, API, firmware và dữ liệu.
+- 27 kiểm thử JavaScript cùng 3 kiểm thử tài nguyên HTML/import đã đạt; kiểm tra file dự kiến đưa vào Git và `git diff --check` đạt.
+- Chủ dự án đã xác nhận bản đồ thật hiển thị rõ và phóng to/thu nhỏ ổn định ngày 18/11/2026. Phần sửa nền đã hoàn tất; thử GPS ngoài trời vẫn giữ lịch hẹn riêng.
+
 Mỗi giai đoạn kết thúc bằng cập nhật file này, kết quả kiểm tra và commit riêng. Ghi rõ phần chưa hoàn thành để tiếp tục ở phiên sau.

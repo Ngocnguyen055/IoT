@@ -26,8 +26,8 @@ class Element {
   }
 }
 
-export function documentFixture() {
-  const html = readFileSync(new URL('../../frontend/templates/index.html', import.meta.url), 'utf8');
+export function documentFixture(template = 'index.html') {
+  const html = readFileSync(new URL(`../../frontend/templates/${template}`, import.meta.url), 'utf8');
   const elements = new Map();
   for (const match of html.matchAll(/<([a-z][a-z0-9]*)\b([^>]*\bid="([^"]+)"[^>]*)>([^<]*)/g)) {
     const element = new Element(match[1]);
@@ -37,7 +37,8 @@ export function documentFixture() {
     element.checked = /\bchecked\b/.test(match[2]);
     elements.set(match[3], element);
   }
-  elements.get('trackHours').value = '24';
+  if (elements.has('trackHours')) elements.get('trackHours').value = '24';
+  if (elements.has('basemapSource')) elements.get('basemapSource').value = 'osmde';
   return {getElementById: id => elements.get(id) || null, createElement: tag => new Element(tag)};
 }
 
@@ -53,15 +54,32 @@ export function timersFixture() {
 }
 
 export function leafletFixture() {
-  const calls = {views: [], markers: [], lines: [], circles: [], clears: 0};
-  const map = {setView(position, zoom) { calls.views.push({position, zoom}); return this; }};
+  const calls = {views: [], markers: [], lines: [], circles: [], clears: 0, tiles: [], resizes: [], maxZooms: []};
+  const mapEvents = new Map();
+  const map = {
+    setView(position, zoom) { calls.views.push({position, zoom}); return this; },
+    setMaxZoom(value) { calls.maxZooms.push(value); return this; },
+    invalidateSize(options) { calls.resizes.push(options); return this; },
+    on(name, handler) { mapEvents.set(name, handler); return this; },
+  };
   const layers = {addTo() { return this; }, clearLayers() { calls.clears++; }};
   const layer = () => ({addTo() { return this; }, bindPopup() { return this; }});
   return {
-    calls,
+    calls, map, mapEvents,
     leaflet: {
       map: () => map,
-      tileLayer: layer,
+      tileLayer(url, options) {
+        const events = new Map();
+        const tile = {...layer(), url, options, redraws: 0, removed: false,
+          on(name, handler) { events.set(name, handler); return this; },
+          off() { events.clear(); return this; },
+          remove() { this.removed = true; return this; },
+          redraw() { this.redraws++; return this; },
+          emit(name, event = {}) { events.get(name)?.(event); },
+        };
+        calls.tiles.push(tile);
+        return tile;
+      },
       layerGroup: () => layers,
       marker(position) {
         const marker = {...layer(), position, setLatLng(value) { this.position = value; return this; }, getLatLng() { return this.position; }};

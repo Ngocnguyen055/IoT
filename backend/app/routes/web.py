@@ -32,4 +32,11 @@ def logout():
 def dashboard():
     if not session.get("admin"):
         return redirect("/login")
-    return render_template("index.html")
+    return render_template("index.html", active_page="home")
+
+
+@blueprint.get("/history")
+def history():
+    if not session.get("admin"):
+        return redirect("/login")
+    return render_template("history.html", active_page="history")

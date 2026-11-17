@@ -9,9 +9,8 @@ from pymongo.write_concern import WriteConcern
 
 from .errors import DatabaseUnavailable
 from ..models import DeviceCommand, READING_FIELDS, Reading, ReadingCounter
-
-
-GPS_FILTER = {"lat": {"$ne": None}, "lon": {"$ne": None}}
+from ..alerts import ALERT_PAGE_SIZE, HOME_ALERT_LIMIT, alert_filter, alert_page_result
+from .indexes import ALERT_INDEX, DEVICE_LOCATION_INDEX, GPS_FILTER, LOCATION_INDEX, ensure_reading_indexes
 
 
 def storage_errors(function):
@@ -55,8 +54,7 @@ class MongoDBRepository:
             raise
 
     def _initialize_storage(self):
-        self.readings.create_index([("device_id", ASCENDING), ("ts", ASCENDING)], name="idx_readings_device_ts")
-        self.readings.create_index([("device_id", ASCENDING), ("_id", DESCENDING)], name="idx_readings_device_id")
+        ensure_reading_indexes(self.readings)
         latest = self.readings.find_one({}, {"_id": 1}, sort=[("_id", DESCENDING)])
         maximum = latest["_id"] if latest else 0
         if not isinstance(maximum, int) or isinstance(maximum, bool) or maximum < 0:
@@ -101,22 +99,44 @@ class MongoDBRepository:
         self.commands.update_one({"_id": command.device_id}, {"$set": {"cmd": command.cmd}}, upsert=True)
 
     @storage_errors
-    def dashboard_snapshot(self):
-        history = [public_reading(row) for row in self.readings.find().sort("_id", DESCENDING).limit(150)]
-        location = self.readings.find_one(GPS_FILTER, sort=[("_id", DESCENDING)])
-        alerts = [public_reading(row) for row in self.readings.find({"event": {"$ne": "telemetry"}}).sort("_id", DESCENDING).limit(20)]
+    def dashboard_snapshot(self, *, compact=False):
+        history = [public_reading(row) for row in self.readings.find().sort("_id", DESCENDING).limit(1 if compact else 150)]
+        location = next(self.readings.find(GPS_FILTER).hint(LOCATION_INDEX).sort("_id", DESCENDING).limit(1), None)
+        alerts = [public_reading(row) for row in self.readings.find(alert_filter()).hint(ALERT_INDEX).sort("_id", DESCENDING).limit(HOME_ALERT_LIMIT if compact else 20)]
         commands = [{"device_id": row["_id"], "cmd": row.get("cmd", "NONE")} for row in self.commands.find()]
-        return {
+        result = {
             "latest": history[0] if history else None,
             "history": history,
             "last_location": {key: location.get(key) for key in ("device_id", "lat", "lon", "ts")} if location else None,
             "alerts": alerts,
             "commands": commands,
         }
+        if compact:
+            result.pop("history")
+        return result
+
+    @storage_errors
+    def alert_page(self, snapshot=None, before=None, after=None):
+        query = alert_filter(snapshot, before, after)
+        direction = ASCENDING if after is not None else DESCENDING
+        rows = list(self.readings.find(query).hint(ALERT_INDEX).sort("_id", direction).limit(ALERT_PAGE_SIZE + 1))
+        extra = len(rows) > ALERT_PAGE_SIZE
+        rows = rows[:ALERT_PAGE_SIZE]
+        if after is not None:
+            rows.reverse()
+        if snapshot is None:
+            snapshot = rows[0]["_id"] if rows else 0
+        has_previous = extra if after is not None else False
+        has_next = extra if after is None else False
+        if rows and before is not None:
+            has_previous = next(self.readings.find(alert_filter(snapshot, after=rows[0]["_id"]), {"_id": 1}).hint(ALERT_INDEX).limit(1), None) is not None
+        if rows and after is not None:
+            has_next = next(self.readings.find(alert_filter(snapshot, before=rows[-1]["_id"]), {"_id": 1}).hint(ALERT_INDEX).limit(1), None) is not None
+        return alert_page_result([public_reading(row) for row in rows], snapshot, has_previous=has_previous, has_next=has_next)
 
     @storage_errors
     def track_points(self, device_id, since):
         query = {**GPS_FILTER, "device_id": device_id, "ts": {"$gte": since}}
-        rows = list(self.readings.find(query).sort("_id", DESCENDING).limit(1000))
+        rows = list(self.readings.find(query).hint(DEVICE_LOCATION_INDEX).sort("_id", DESCENDING).limit(1000))
         return [{"id": int(row["_id"]), **{key: row.get(key) for key in ("ts", "lat", "lon", "gps_satellites", "event")}}
                 for row in reversed(rows)]

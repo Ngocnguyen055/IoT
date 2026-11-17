@@ -2,15 +2,45 @@
 
 Hệ thống thử nghiệm ESP32 gửi SOS, nhịp tim, SpO₂, điện áp/phần trăm pin và GPS qua 4G đến dashboard Flask.
 
-## Chạy trên Windows
+Thanh điều hướng có **Trang chủ** (số đo trực tiếp và 8 sự kiện mới nhất) và **Lịch sử** (20 sự kiện mỗi trang, nút Trước/Sau). Lịch sử gồm SOS, cảnh báo nhịp tim/SpO₂ và phản hồi định vị; không liệt kê các bản tin định kỳ. Chọn **Về mới nhất** để cập nhật sự kiện mới khi đang xem lịch sử. Xem [cách phân trang và kiểm tra truy vấn](docs/alert-history.md).
 
-Dự án hiện dùng Python 3.11 trở lên, đã kiểm tra trên Python 3.12.14.
+## Clone và chạy lần đầu trên Windows
 
-1. Lần đầu, chạy `Cai-dat.cmd` để tạo môi trường Python và cài thư viện.
-2. Chạy `Chay-web.cmd`. Mở `http://127.0.0.1:5000`, dùng mật khẩu hiển thị trong cửa sổ chạy web.
-3. Khi cần kết nối thiết bị thật, chạy thêm `Ket-noi-thiet-bi.cmd`.
-4. Script tạo `firmware/ESP32_Firmware/device_config.local.h` với địa chỉ tunnel và khóa khớp với web.
-5. Mở `firmware/ESP32_Firmware/ESP32_Firmware.ino` bằng Arduino IDE, chọn ESP32 Dev Module/cổng USB thực tế rồi Upload.
+Dự án cần Python 3.11 trở lên, đã kiểm tra trên Python 3.12.14. Máy cần Internet để cài thư viện. Kiểm tra `python --version` trước; nếu chưa có Python, cài từ [python.org](https://www.python.org/downloads/windows/). Các lệnh dưới chạy trong PowerShell; cần Git để dùng `git clone`.
+
+### Chạy thử giao diện
+
+```powershell
+git clone https://github.com/Ngocnguyen055/IoT.git
+cd IoT
+.\Cai-dat.cmd
+.\Chay-web.cmd
+```
+
+Đợi `CAI DAT XONG` ở bước cài đặt. Khi web mở, vào <http://127.0.0.1:5000> và dùng mật khẩu ở dòng `Mat khau dang nhap` trong cửa sổ web.
+
+Trên repo mới chưa có cấu hình riêng, ứng dụng tự tạo mật khẩu/khóa trong `config.local.json` và database SQLite trống. Luồng này chưa cần tạo `.env`, tài khoản Atlas hoặc thiết bị ESP32. Web chưa có số đo sẽ hiển thị trạng thái chưa nhận dữ liệu; đây là kết quả mong đợi.
+
+`.env`, mật khẩu, URI Atlas, database thật và header cấu hình ESP32 được Git bỏ qua. Clone repo chỉ lấy mã nguồn và các file mẫu, không lấy cấu hình hay lịch sử số đo của máy người khác.
+
+### Dùng MongoDB Atlas
+
+Sau khi đã chạy thử ở trên:
+
+1. Dừng web bằng Ctrl+C.
+2. Chuẩn bị cluster/database user và cho phép IP máy trong Atlas theo [hướng dẫn Atlas](docs/mongodb-atlas.md).
+3. Chạy `Tao-cau-hinh-MongoDB.cmd`, nhập URI Atlas và tên database của môi trường bạn muốn dùng.
+4. Chạy `.venv\Scripts\python.exe -m scripts.configure_env` để tạo `.env` từ các giá trị vừa được sinh/lưu. Mật khẩu và khóa đã có được giữ nguyên.
+5. Mở `.env`, đặt `DATABASE_BACKEND=mongodb`. Các trường `MONGODB_URI`, `MONGODB_DATABASE` và `MONGODB_TIMEOUT_MS` đã được công cụ điền.
+6. Chạy `Khoi-tao-MongoDB.cmd`, đợi `KHOI TAO MONGODB DAT`, rồi mở lại `Chay-web.cmd`.
+
+Với repo mới và database Atlas mới, dùng bước khởi tạo này. `Chuyen-sang-MongoDB.cmd` dành cho máy đã có dữ liệu SQLite cần chuyển; xem [hướng dẫn migration](docs/mongodb-migration.md).
+
+### Kết nối thiết bị thật
+
+1. Giữ web đang chạy, cấp nguồn thiết bị và module 4G như cấu hình phần cứng của dự án.
+2. Chạy `Ket-noi-thiet-bi.cmd`, đợi địa chỉ Cloudflare và dòng `DA CHUAN BI FIRMWARE`. Script tự tạo header với URL/khóa khớp web trên máy này.
+3. Mở lại `firmware/ESP32_Firmware/ESP32_Firmware.ino` bằng Arduino IDE, chọn ESP32 Dev Module và cổng USB thực tế rồi Upload. Cài board/thư viện theo [hướng dẫn Arduino](firmware/Huong-dan-Arduino.md).
 
 Giữ cửa sổ web và tunnel mở khi sử dụng. Quick Tunnel có thể đổi địa chỉ sau mỗi lần mở; cần chuẩn bị và nạp lại firmware khi địa chỉ đổi. Hướng dẫn chi tiết: [Huong-dan-chay-web.md](Huong-dan-chay-web.md).
 
@@ -53,6 +83,8 @@ Từ giai đoạn 3, `Kiem-tra.cmd` chạy thêm kiểm thử JavaScript bằng 
 
 Kết nối Atlas được cấu hình bằng `Tao-cau-hinh-MongoDB.cmd`, kiểm tra thật bằng `Kiem-tra-MongoDB.cmd`. Nếu còn dùng SQLite và cần chuyển dữ liệu, dừng web/thiết bị rồi chạy `Chuyen-sang-MongoDB.cmd`; xem [hướng dẫn chuyển dữ liệu](docs/mongodb-migration.md). Máy này đã chuyển thành công sang Atlas.
 
+Sau khi cập nhật tính năng Lịch sử, dừng web/thiết bị và chạy `Kiem-tra-lich-su.cmd` để kiểm tra phân trang cùng `explain` trên Atlas. Công cụ dùng database tạm riêng, dọn dữ liệu thử rồi bổ sung index cho database ứng dụng. Chạy xong mở lại `Chay-web.cmd`; thay đổi này không cần nạp firmware.
+
 ## Tài liệu cải tổ
 
 - [Tiến độ và các giai đoạn](docs/refactor-plan.md)
@@ -64,6 +96,7 @@ Kết nối Atlas được cấu hình bằng `Tao-cau-hinh-MongoDB.cmd`, kiểm
 - [Chuyển dữ liệu và bật MongoDB cho web](docs/mongodb-migration.md)
 - [Model, lệnh init-db và cấu hình .env](docs/models-and-configuration.md)
 - [Thử thiết bị thật và đối chiếu dữ liệu mới](docs/device-verification.md)
+- [Trang chủ, lịch sử cảnh báo và hiệu năng truy vấn](docs/alert-history.md)
 
 Backend nằm trong `backend/app/`, frontend trong `frontend/`, firmware chính trong `firmware/ESP32_Firmware/`. `app.py` giữ điểm vào chạy Python tương thích; cấu hình chính của máy này là `.env`, database là MongoDB Atlas. Các sketch chẩn đoán cảm biến trong `firmware/` được giữ để xử lý lỗi phần cứng.
 

@@ -1,6 +1,6 @@
 # Mở web SOS trên máy này
 
-Thư mục dự án: `C:\Projects\IoT`.
+Thực hiện trong thư mục bạn đã clone repo. Trên máy Ngọc, thư mục này là `C:\Projects\IoT`; máy khác có thể dùng đường dẫn khác. Nếu vừa clone lần đầu, bắt đầu từ mục [Clone và chạy lần đầu](README.md#clone-và-chạy-lần-đầu-trên-windows).
 
 1. Lần đầu: bấm đúp **Cai-dat.cmd**, đợi hiện **CAI DAT XONG**. Cần Internet để tải các thư viện Python của dự án.
 2. Bấm đúp **Chay-web.cmd**. Một cửa sổ chạy web sẽ mở và trình duyệt tự mở trang <http://127.0.0.1:5000>.
@@ -11,7 +11,13 @@ Có thể dùng **Dung-web.cmd** để dừng web đang chạy nền. Nếu web 
 
 Nếu chưa nhận bản tin từ thiết bị, trang web sẽ báo **Chưa có dữ liệu từ ESP32** và các chỉ số hiện dấu **—**. Đây là trạng thái bình thường trước khi thiết bị kết nối được.
 
+Thanh điều hướng bên trái có **Trang chủ** và **Lịch sử** (màn hình nhỏ hiển thị ở phía trên). Trang chủ giữ số đo trực tiếp và tối đa 8 sự kiện mới nhất. Lịch sử có 20 sự kiện mỗi trang: **Sau →** xem cũ hơn, **← Trước** quay về mới hơn, **Về mới nhất** cập nhật lại từ đầu. Các số đo trong bảng là số đo được lưu cùng sự kiện đó.
+
+Sau lần cập nhật có tính năng Lịch sử, dừng web/thiết bị, chạy **Kiem-tra-lich-su.cmd**, đợi **KIEM TRA LICH SU DAT** rồi mở web lại. Thử truy vấn dùng database tạm trên Atlas và tự dọn sau khi chạy; công cụ chỉ bổ sung index vào database đang dùng. Không cần nạp lại ESP32 cho thay đổi giao diện này. Xem [hướng dẫn lịch sử](docs/alert-history.md).
+
 Máy này hiện dùng Python, Flask và MongoDB Atlas với database `iot_sos`. Thư viện Python nằm trong `.venv`; không cần cài MongoDB server trên máy để dùng Atlas. Bản SQLite cũ vẫn được giữ, còn dữ liệu nhận sau khi chuyển được lưu trên Atlas. Node.js chỉ phục vụ kiểm thử JavaScript.
+
+Nếu bản đồ trống/tối hoặc phóng to bị mờ, xem dòng trạng thái ngay dưới bản đồ. Mặc định **Nền bản đồ: OpenStreetMap dự phòng** dùng nguồn đã mở được trên máy này. Có thể bấm **Tải lại bản đồ** hoặc đổi nguồn; thao tác này giữ nguyên vị trí và hành trình đã có. Ảnh nền cần Internet trên máy mở web, ngay cả khi ESP32 chưa có GPS. Nguồn dự phòng cho phép phóng to tối đa mức 18 để xem đường phố; không phóng ảnh vượt mức chi tiết sẵn có.
 
 # Để nhận dữ liệu từ thiết bị thật
 
@@ -26,7 +32,7 @@ Sau khi web chạy được:
 1. Bấm đúp **Ket-noi-thiet-bi.cmd**. File này tải Cloudflare từ kho chính thức, kiểm tra SHA-256 rồi mở tunnel tới web. Không cần quyền quản trị.
 2. Đợi hiện địa chỉ `https://...trycloudflare.com`. Script sẽ tạo/cập nhật `firmware\ESP32_Firmware\device_config.local.h` với địa chỉ này và khóa thiết bị. Header riêng này được Git bỏ qua.
 3. Mở lại **firmware\ESP32_Firmware\ESP32_Firmware.ino** trong Arduino IDE để nhận header mới, chọn ESP32 Dev Module và cổng COM đang cắm thiết bị rồi Upload.
-4. Giữ cả hai cửa sổ chạy web và Cloudflare mở. Mở web, đợi dữ liệu; bấm thử nút SOS trên thiết bị và kiểm tra mục **Cảnh báo & sự kiện**.
+4. Giữ cả hai cửa sổ chạy web và Cloudflare mở. Mở web, đợi dữ liệu; bấm thử nút SOS trên thiết bị và kiểm tra mục **Cảnh báo mới nhất** hoặc trang **Lịch sử**.
 
 Nếu báo chưa có cổng COM, kiểm tra thiết bị đã cắm cáp USB truyền dữ liệu vào máy tính. Nếu không nạp được firmware, cần kiểm tra board, thư viện Arduino và thông báo lỗi cụ thể.
 

@@ -15,6 +15,18 @@ def status():
     return jsonify(service().status())
 
 
+@blueprint.get("/dashboard")
+@admin_auth
+def compact_dashboard():
+    return jsonify(service().status(compact=True))
+
+
+@blueprint.get("/alerts")
+@admin_auth
+def alerts():
+    return jsonify(service().alerts(request.args.get("snapshot"), request.args.get("before"), request.args.get("after")))
+
+
 @blueprint.get("/track")
 @admin_auth
 def track():

@@ -1,6 +1,7 @@
 """Explicit collection/index/schema setup, separate from normal application startup."""
 
 from .models import COLLECTION_MODELS
+from .repositories.indexes import verify_reading_indexes
 
 
 def collection_options(database):
@@ -40,11 +41,7 @@ def initialize_database(repository, *, check_only=False):
                 database.command({"collMod": name, "validator": validator, "validationLevel": "strict", "validationAction": "error"})
         repository._initialize_storage()
     else:
-        indexes = repository.readings.index_information()
-        required = {"idx_readings_device_ts": [("device_id", 1), ("ts", 1)],
-                    "idx_readings_device_id": [("device_id", 1), ("_id", -1)]}
-        if any(indexes.get(name, {}).get("key") != keys for name, keys in required.items()):
-            raise ValueError("MongoDB reading indexes do not match the application")
+        verify_reading_indexes(repository.readings)
     counter = repository.counters.find_one({"_id": "readings"})
     latest = repository.readings.find_one({}, {"_id": 1}, sort=[("_id", -1)])
     if counter is None or counter["value"] < (latest["_id"] if latest else 0):

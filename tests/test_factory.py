@@ -70,10 +70,10 @@ class FactoryTests(unittest.TestCase):
         rules = {(rule.rule, method) for rule in self.app().url_map.iter_rules()
                  for method in rule.methods - {"OPTIONS", "HEAD"}}
         self.assertEqual(rules, {
-            ("/", "GET"), ("/login", "GET"), ("/login", "POST"), ("/logout", "POST"),
+            ("/", "GET"), ("/history", "GET"), ("/login", "GET"), ("/login", "POST"), ("/logout", "POST"),
             ("/static/<path:filename>", "GET"), ("/api/device/telemetry", "POST"),
             ("/api/device/command", "GET"), ("/api/status", "GET"), ("/api/track", "GET"),
-            ("/api/command", "POST"),
+            ("/api/command", "POST"), ("/api/dashboard", "GET"), ("/api/alerts", "GET"),
         })
 
     def test_unusual_json_returns_400_without_saving_readings(self):

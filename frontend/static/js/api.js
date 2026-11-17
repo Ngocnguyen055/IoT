@@ -25,7 +25,15 @@ export function createApi({fetchImpl = globalThis.fetch.bind(globalThis), onUnau
   }
 
   return {
-    status: () => request('/api/status', 'Không thể đọc API'),
+    status: () => request('/api/dashboard', 'Không thể đọc API'),
+    alerts: (parameters = {}) => {
+      const query = new URLSearchParams();
+      for (const name of ['snapshot', 'before', 'after']) {
+        if (parameters[name] !== null && parameters[name] !== undefined) query.set(name, parameters[name]);
+      }
+      const suffix = query.toString();
+      return request('/api/alerts' + (suffix ? '?' + suffix : ''), 'Không thể đọc lịch sử cảnh báo');
+    },
     track: (device, hours) => request(`/api/track?device_id=${encodeURIComponent(device)}&hours=${hours}`, 'Không thể đọc lịch sử GPS'),
     locate: device => request('/api/command', 'Không thể gửi lệnh định vị', {
       method: 'POST',

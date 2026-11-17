@@ -38,9 +38,10 @@ class FrontendAssetTests(unittest.TestCase):
         dashboard = Page(self.client.get("/").get_data(as_text=True))
         ids = [attrs["id"] for _, attrs in dashboard.elements if "id" in attrs]
         self.assertEqual(len(ids), len(set(ids)))
-        self.assertTrue({"bpm", "spo2", "battery", "voltage", "map", "locate", "alerts", "trackHours", "showTrack", "followGps", "copyCoords", "googleMaps"}.issubset(ids))
+        self.assertTrue({"bpm", "spo2", "battery", "voltage", "map", "locate", "alerts", "trackHours", "showTrack", "followGps", "copyCoords", "googleMaps", "basemapSource", "reloadMap", "mapStatus"}.issubset(ids))
         self.assertTrue(any(tag == "form" and attrs.get("action") == "/logout" and attrs.get("method") == "post" for tag, attrs in dashboard.elements))
-        for page in (login, dashboard):
+        history = Page(self.client.get("/history").get_data(as_text=True))
+        for page in (login, dashboard, history):
             styles = [attrs["href"] for tag, attrs in page.elements if tag == "link" and attrs.get("href", "").startswith("/static/")]
             self.assertEqual(styles, ["/static/css/style.css"])
             response = self.client.get(styles[0])
@@ -48,13 +49,25 @@ class FrontendAssetTests(unittest.TestCase):
             self.assertEqual(response.mimetype, "text/css")
             response.close()
         selected = [attrs.get("value") for tag, attrs in dashboard.elements if tag == "option" and "selected" in attrs]
-        self.assertEqual(selected, ["24"])
+        self.assertEqual(selected, ["24", "osmde"])
+
+        for page, active in ((dashboard, "/"), (history, "/history")):
+            navigation = [attrs for tag, attrs in page.elements if tag == "a" and "nav-link" in attrs.get("class", "")]
+            self.assertEqual([attrs["href"] for attrs in navigation], ["/", "/history"])
+            self.assertEqual([attrs["href"] for attrs in navigation if attrs.get("aria-current") == "page"], [active])
+        history_ids = [attrs["id"] for _, attrs in history.elements if "id" in attrs]
+        self.assertEqual(len(history_ids), len(set(history_ids)))
+        self.assertTrue({"historyRows", "historyNext", "historyPrevious", "historyRefresh"}.issubset(history_ids))
 
     def test_every_local_es_module_import_has_a_javascript_response(self):
         self.client.post("/login", data={"password": "assets-test-admin"})
-        page = Page(self.client.get("/").get_data(as_text=True))
+        self.check_modules("/", "/static/js/app.js", 10)
+        self.check_modules("/history", "/static/js/history.js", 4)
+
+    def check_modules(self, url, expected_entry, count):
+        page = Page(self.client.get(url).get_data(as_text=True))
         entry = [attrs["src"] for tag, attrs in page.elements if tag == "script" and attrs.get("type") == "module"]
-        self.assertEqual(entry, ["/static/js/app.js"])
+        self.assertEqual(entry, [expected_entry])
         visited, pending = set(), list(entry)
         while pending:
             path = pending.pop()
@@ -71,7 +84,7 @@ class FrontendAssetTests(unittest.TestCase):
                 self.assertFalse(urlsplit(resolved).netloc)
                 self.assertTrue(resolved.startswith("/static/js/"), resolved)
                 pending.append(resolved)
-        self.assertEqual(len(visited), 9)
+        self.assertEqual(len(visited), count)
 
     def test_original_asset_urls_remain_compatible(self):
         response = self.client.get("/static/app.js")

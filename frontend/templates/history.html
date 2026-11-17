@@ -1,0 +1,46 @@
+{% extends "app_layout.html" %}
+
+{% block title %}Lịch sử cảnh báo - IOT Ngọc{% endblock %}
+{% block page_title %}Lịch sử{% endblock %}
+{% block page_description %}Xem lại cảnh báo và sự kiện từ mới nhất đến cũ nhất{% endblock %}
+
+{% block page_content %}
+  <section class="panel history-panel" aria-labelledby="historyTitle">
+    <div class="history-heading">
+      <div>
+        <h2 id="historyTitle">Cảnh báo & sự kiện</h2>
+        <p class="muted">20 sự kiện mỗi trang · Số đo hiển thị tại thời điểm ghi nhận</p>
+      </div>
+      <button id="historyRefresh" class="outline" type="button">Về mới nhất</button>
+    </div>
+    <div id="historyNotice" class="notice" role="status" aria-live="polite">Đang tải lịch sử…</div>
+    <div id="historyTable" class="history-table-wrap" tabindex="0" aria-label="Bảng lịch sử cảnh báo">
+      <table class="history-table">
+        <caption class="sr-only">Cảnh báo được sắp xếp từ mới nhất đến cũ nhất</caption>
+        <thead>
+          <tr>
+            <th scope="col">Thời gian</th>
+            <th scope="col">Sự kiện</th>
+            <th scope="col">Thiết bị</th>
+            <th scope="col">Nhịp tim</th>
+            <th scope="col">SpO₂</th>
+            <th scope="col">Pin</th>
+            <th scope="col">Vị trí GPS</th>
+          </tr>
+        </thead>
+        <tbody id="historyRows"><tr><td colspan="7" class="history-empty">Đang tải…</td></tr></tbody>
+      </table>
+    </div>
+    <div class="history-pagination" aria-label="Phân trang lịch sử">
+      <span><b id="historyPage">Trang 1</b><span id="historyCount" class="muted"></span></span>
+      <div class="pagination-buttons">
+        <button id="historyPrevious" class="outline" type="button" disabled>← Trước</button>
+        <button id="historyNext" class="outline" type="button" disabled>Sau →</button>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script type="module" src="{{ url_for('static', filename='js/history.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block body_class %}application{% endblock %}
+
+{% block content %}
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Điều hướng chính">
+      <a class="sidebar-brand" href="{{ url_for('web.dashboard') }}">
+        <span class="brand-mark" aria-hidden="true">SOS</span>
+        <span><b>IOT - Ngọc</b><small>Theo dõi thiết bị qua 4G</small></span>
+      </a>
+      <nav class="sidebar-nav">
+        <a class="nav-link{% if active_page == 'home' %} is-active{% endif %}" href="{{ url_for('web.dashboard') }}"{% if active_page == 'home' %} aria-current="page"{% endif %}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg>
+          Trang chủ
+        </a>
+        <a class="nav-link{% if active_page == 'history' %} is-active{% endif %}" href="{{ url_for('web.history') }}"{% if active_page == 'history' %} aria-current="page"{% endif %}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          Lịch sử
+        </a>
+      </nav>
+      <form class="sidebar-logout" action="{{ url_for('web.logout') }}" method="post">
+        <button class="outline" type="submit">Đăng xuất</button>
+      </form>
+    </aside>
+    <div class="app-workspace">
+      <header class="app-header">
+        <div>
+          <h1>{% block page_title %}Trang chủ{% endblock %}</h1>
+          <small>{% block page_description %}Thông số mới nhất và cảnh báo từ thiết bị{% endblock %}</small>
+        </div>
+      </header>
+      <main>{% block page_content %}{% endblock %}</main>
+    </div>
+  </div>
+{% endblock %}

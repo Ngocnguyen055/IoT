@@ -18,7 +18,7 @@ Nguồn: [hướng dẫn chính thức của Espressif](https://docs.espressif.c
 ## 2. Chọn board và cổng
 
 1. Chọn **Tools → Board → esp32 → ESP32 Dev Module**.
-2. Chọn **Tools → Port → COM3**. Máy đã nhận USB-SERIAL CH340 ở cổng này; nếu rút/cắm sang cổng khác, số COM có thể đổi.
+2. Chọn **Tools → Port** và chọn cổng của ESP32 đang cắm. Trên máy Ngọc hiện là **COM3**; máy khác hoặc cổng USB khác có thể có số COM khác.
 
 Đây là board theo chú thích trong mã firmware do người làm sản phẩm cung cấp.
 
@@ -39,8 +39,8 @@ Nguồn: [TinyGPSPlus](https://github.com/mikalhart/TinyGPSPlus), [SparkFun MAX3
 ## 4. Mở đúng file và nạp
 
 1. Đảm bảo web và cửa sổ Cloudflare vẫn đang chạy.
-2. Chọn **File → Open…** và mở file **C:\Projects\IoT\firmware\ESP32_Firmware\ESP32_Firmware.ino**.
-3. Kiểm tra board **ESP32 Dev Module**, cổng **COM3**.
+2. Chọn **File → Open…**, trong thư mục repo đã clone mở **firmware\ESP32_Firmware\ESP32_Firmware.ino**.
+3. Kiểm tra board **ESP32 Dev Module** và cổng của ESP32 đang cắm.
 4. Bấm nút hình **mũi tên sang phải** ở góc trên bên trái, cạnh nút dấu tích. Đây là nút **Upload**.
 5. Chờ biên dịch và nạp hoàn tất. Nếu có lỗi, giữ nguyên thông báo trong bảng Output để xem dòng lỗi cụ thể.
 

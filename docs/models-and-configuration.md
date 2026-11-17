@@ -30,6 +30,8 @@ Lệnh đọc cấu hình hiện tại, chạy hai kiểm thử schema trên dat
 
 Chạy lại giữ nguyên số đo, lệnh và các ID; counter không giảm. Validator khác đang tồn tại sẽ được giữ và báo cần migration schema riêng. Lệnh không xóa database/collection ứng dụng.
 
+Index được định nghĩa tập trung trong `backend/app/repositories/indexes.py`. Sau khi thêm trang Lịch sử, có thêm partial index cho sự kiện và GPS; không thêm collection hoặc thay đổi schema Reading. Dùng `Kiem-tra-lich-su.cmd` để kiểm tra truy vấn Atlas và bổ sung các index này; không cần chuyển lại dữ liệu. Chi tiết ở [lịch sử cảnh báo](alert-history.md).
+
 Gắn validator vào collection cũ dùng `collMod`, cần quyền `dbAdmin` trên database ứng dụng (ví dụ `iot_sos`) ngoài quyền đọc/ghi. Nếu Atlas báo mã 13, bổ sung role này cho database user trong Database Access rồi chạy lại. Web chạy bình thường không tự thay đổi validators. Tham khảo [MongoDB collMod](https://www.mongodb.com/docs/manual/reference/command/collmod/).
 
 Chỉ kiểm tra schema/index/data hiện có, không ghi database:

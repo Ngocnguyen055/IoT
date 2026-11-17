@@ -1,5 +1,7 @@
 # Backend sau giai đoạn 2
 
+Tài liệu dưới ghi lại bước tách backend ban đầu. Bản hiện tại đã có repository MongoDB, model/schema và `.env`; xem [MongoDB Atlas](mongodb-atlas.md) và [model/cấu hình](models-and-configuration.md). Phần Lịch sử bổ sung `alerts.py` dùng chung, `repositories/indexes.py` quản lý index, `alert_page(snapshot, before, after)` cho cả hai repository và `dashboard_snapshot(compact=True)` cho Trang chủ. API mới: `/api/dashboard`, `/api/alerts`, trang HTML `/history`; API thiết bị giữ nguyên. Xem [thiết kế lịch sử](alert-history.md).
+
 ## Cấu trúc
 
 ```text

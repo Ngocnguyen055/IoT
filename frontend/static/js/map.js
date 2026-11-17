@@ -1,5 +1,6 @@
 import {coordinates, formatTime} from './format.js';
 import {TRACK_GAP_SECONDS} from './config.js';
+import {createBasemap} from './basemap.js';
 
 export function trackSegments(points) {
   const segments = [];
@@ -19,15 +20,27 @@ export function trackSegments(points) {
   return segments;
 }
 
-export function createMapView(root, leaflet = globalThis.L) {
+export function createMapView(root, leaflet = globalThis.L, {ResizeObserverImpl = globalThis.ResizeObserver} = {}) {
   if (!leaflet) {
     root.getElementById('map').textContent = 'Bản đồ chưa tải được. Bạn vẫn có thể xem tọa độ bên dưới.';
+    const status = root.getElementById('mapStatus');
+    if (status) {
+      status.textContent = 'Không tải được thư viện bản đồ. Kiểm tra kết nối Internet rồi tải lại trang.';
+      status.className = 'map-status muted error';
+    }
+    for (const id of ['basemapSource', 'reloadMap']) {
+      const control = root.getElementById(id);
+      if (control) control.disabled = true;
+    }
     return {setPosition() {}, renderTrack() {}, follow: () => false};
   }
   const map = leaflet.map('map').setView([16.4, 106.2], 5);
-  leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19, attribution: '© OpenStreetMap contributors',
-  }).addTo(map);
+  createBasemap(root, leaflet, map);
+  if (ResizeObserverImpl) {
+    const observer = new ResizeObserverImpl(() => map.invalidateSize({pan: false, debounceMoveend: true}));
+    observer.observe(root.getElementById('map'));
+    map.on('unload', () => observer.disconnect());
+  }
   const trackLayers = leaflet.layerGroup().addTo(map);
   let pin = null, firstPositionShown = false;
 

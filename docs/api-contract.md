@@ -10,6 +10,7 @@ Ghi nhận hành vi của commit `1fc3c32`, ngày 17/11/2026. Dùng làm chuẩn
 | `POST /login` | Form field `password`; đúng: tạo session admin và redirect `/` (302); sai: HTML lỗi, 401 |
 | `POST /logout` | Xóa session và redirect `/login` (302) |
 | `GET /` | Có session: dashboard HTML 200; chưa đăng nhập: redirect `/login` |
+| `GET /history` | Có session: trang lịch sử HTML 200; chưa đăng nhập: redirect `/login` |
 | API dành cho admin | Thiếu session: 401, `{"error":"login required"}` |
 | API dành cho thiết bị | Header `X-Device-Key`; sai/thiếu: 401, `{"error":"device unauthorized"}` |
 
@@ -83,7 +84,39 @@ Dùng session admin. JSON chứa:
 
 Một dòng số đo có các trường `id`, `device_id`, `ts`, `event`, `lat`, `lon`, `gps_satellites`, `bpm`, `spo2`, `battery_pct`, `battery_voltage`, `current_ma`.
 
-Endpoint này hiện tổng hợp tất cả thiết bị; không có bộ lọc `device_id`. Frontend tải lại mỗi 5 giây và coi bản tin cũ hơn 90 giây là có thể ngoại tuyến. Mốc này là hành vi giao diện, không phải phản hồi lỗi của API.
+Endpoint này hiện tổng hợp tất cả thiết bị; không có bộ lọc `device_id`. API cũ được giữ để tương thích. Trang chủ hiện dùng `/api/dashboard` dưới đây.
+
+## `GET /api/dashboard`
+
+Dùng session admin. Các trường giống `/api/status`, nhưng không có `history` và chỉ có tối đa **8** `alerts`. Chỉ đọc một số đo mới nhất cho `latest`. Trang chủ tải lại mỗi 5 giây và coi bản tin cũ hơn 90 giây là có thể ngoại tuyến; không cần tải lại 150 số đo cho mỗi lần polling.
+
+## `GET /api/alerts`
+
+Dùng session admin. Chỉ lấy sự kiện `button`, `high_bpm`, `low_spo2`, `remote`; xếp theo ID giảm dần. Mỗi lần trả tối đa **20** dòng, không nhận tham số tăng kích thước trang.
+
+Lần đầu gọi không có query string. Phản hồi:
+
+```json
+{
+  "items": [],
+  "pagination": {
+    "page_size": 20,
+    "snapshot": 0,
+    "has_previous": false,
+    "has_next": false,
+    "previous_after": null,
+    "next_before": null
+  }
+}
+```
+
+Khi có dữ liệu, `items` có cùng trường như một dòng số đo của `/api/status`. `snapshot` là ID sự kiện mới nhất tại lần mở lịch sử, bằng 0 nếu trống. Giữ nguyên mốc này khi chuyển trang:
+
+- Xem cũ hơn: `?snapshot=<snapshot>&before=<next_before>`.
+- Xem mới hơn: `?snapshot=<snapshot>&after=<previous_after>`.
+- Về mới nhất: gọi lại không có query string.
+
+`before` và `after` loại trừ nhau; phải có snapshot đi cùng. Snapshot là số nguyên 0…2⁶³−1; cursor là số nguyên 1…snapshot, viết bằng chữ số ASCII. Tham số sai trả 400. `has_previous`/`has_next` quyết định nút điều hướng; cursor không áp dụng trả null. Không trả tổng số trang và không chạy `count_documents` cho mỗi lượt xem. Xem [thiết kế truy vấn](alert-history.md).
 
 ## `GET /api/track?device_id=ngoc-01&hours=24`
 

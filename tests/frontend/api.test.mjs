@@ -11,7 +11,7 @@ test('API client keeps endpoint, query encoding, cookies and LOCATE JSON contrac
   await api.status();
   await api.track('device / one', 24);
   await api.locate('device / one');
-  assert.equal(calls[0].url, '/api/status');
+  assert.equal(calls[0].url, '/api/dashboard');
   assert.equal(calls[1].url, '/api/track?device_id=device%20%2F%20one&hours=24');
   assert.equal(calls[2].url, '/api/command');
   assert.equal(calls[2].options.method, 'POST');
@@ -25,10 +25,23 @@ test('API client keeps endpoint, query encoding, cookies and LOCATE JSON contrac
 test('401 on any API redirects once and returns a distinct authentication error', async () => {
   let redirects = 0;
   const api = createApi({fetchImpl: async () => ({status: 401}), onUnauthorized: () => { redirects++; }});
-  for (const request of [() => api.status(), () => api.track('ngoc-01', 24), () => api.locate('ngoc-01')]) {
+  for (const request of [() => api.status(), () => api.alerts(), () => api.track('ngoc-01', 24), () => api.locate('ngoc-01')]) {
     await assert.rejects(request, LoginRequiredError);
   }
   assert.equal(redirects, 1);
+});
+
+test('alert history includes only supplied cursors and preserves an empty snapshot', async () => {
+  const calls = [];
+  const api = createApi({fetchImpl: async url => {
+    calls.push(url);
+    return {status: 200, ok: true, json: async () => ({})};
+  }});
+  await api.alerts();
+  await api.alerts({snapshot: 0});
+  await api.alerts({snapshot: 92, before: 51, after: null});
+  await api.alerts({snapshot: 92, after: 31});
+  assert.deepEqual(calls, ['/api/alerts', '/api/alerts?snapshot=0', '/api/alerts?snapshot=92&before=51', '/api/alerts?snapshot=92&after=31']);
 });
 
 test('API errors keep server messages and handle non-JSON gateway responses', async () => {

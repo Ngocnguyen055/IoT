@@ -7,16 +7,22 @@ const TITLES = {
   remote: 'Định vị từ website',
 };
 
+export const eventTitle = event => TITLES[event] || event;
+
 export function createAlertsView(root) {
   const container = root.getElementById('alerts');
   return {
     render(alerts) {
       container.replaceChildren();
+      if (!alerts.length) {
+        container.textContent = 'Chưa có cảnh báo hoặc sự kiện.';
+        return;
+      }
       for (const alert of alerts) {
         const box = root.createElement('div');
         box.className = 'event';
         const title = root.createElement('b');
-        title.textContent = TITLES[alert.event] || alert.event;
+        title.textContent = eventTitle(alert.event);
         const details = root.createElement('small');
         details.textContent = formatTime(alert.ts) + (alert.lat == null ? ' · Không có GPS fix' : ' · Có tọa độ');
         box.append(title, details);

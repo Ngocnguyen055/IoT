@@ -62,3 +62,26 @@ def track_parameters(device_id, hours):
     if not 1 <= hours <= 168:
         raise ValidationError("hours out of range")
     return identifier, hours
+
+
+def alert_parameters(snapshot=None, before=None, after=None):
+    values = {}
+    for name, value in (("snapshot", snapshot), ("before", before), ("after", after)):
+        if value is None:
+            values[name] = None
+            continue
+        if not isinstance(value, str) or not value.isascii() or not value.isdecimal():
+            raise ValidationError(f"bad {name}")
+        try:
+            number = int(value)
+        except ValueError:
+            raise ValidationError(f"bad {name}") from None
+        if not (0 if name == "snapshot" else 1) <= number <= 2**63 - 1:
+            raise ValidationError(f"bad {name}")
+        values[name] = number
+    cursors = [values[name] for name in ("before", "after") if values[name] is not None]
+    if len(cursors) > 1:
+        raise ValidationError("before and after cannot be used together")
+    if cursors and (values["snapshot"] is None or cursors[0] > values["snapshot"]):
+        raise ValidationError("cursor requires a matching snapshot")
+    return values
