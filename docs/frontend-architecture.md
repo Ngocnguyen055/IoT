@@ -1,0 +1,66 @@
+# Frontend sau giai đoạn 3
+
+## Cấu trúc và cách chạy
+
+```text
+frontend/
+  templates/
+    base.html                    Khung HTML, CSS chung và các block Jinja
+    index.html                   Dashboard
+    login.html                   Đăng nhập
+  static/
+    css/style.css                CSS đã định dạng lại, giữ nguyên các quy tắc
+    js/
+      app.js                     Ghép các thành phần và khởi động dashboard
+      api.js                     HTTP, cookie, lỗi và chuyển về đăng nhập khi 401
+      dashboard.js               Số đo, trạng thái kết nối, LOCATE và polling
+      alerts.js                  Danh sách cảnh báo
+      location.js                Vị trí GPS cuối, Google Maps và sao chép tọa độ
+      map.js                     Leaflet, marker và chia đoạn hành trình
+      tracking.js                Khoảng lịch sử, ẩn/hiện đường đi và tải điểm GPS
+      format.js                  Hiển thị null/0, thời gian và tọa độ hợp lệ
+      config.js                  Mốc polling, ngoại tuyến và khoảng cách thời gian
+    app.js                       Loader tương thích với URL script cũ
+    style.css                    URL CSS cũ chuyển đến CSS mới
+  package.json                   Đánh dấu ES module cho kiểm thử Node.js
+```
+
+Trình duyệt nạp ES module trực tiếp. Tiếp tục chạy bằng `Chay-web.cmd`, cùng Flask và cùng origin API. Không có bước npm install hoặc build để chạy web. Node.js chỉ phục vụ các kiểm thử JavaScript; máy cải tổ dùng Node.js 24.14.0.
+
+Factory Flask đã chuyển đường dẫn tài nguyên đến `frontend/templates/` và `frontend/static/`. URL API giữ nguyên. Các URL `/static/app.js` và `/static/style.css` vẫn có loader tương thích cho HTML cũ trong cache.
+
+## Hành vi được giữ
+
+- Polling status mỗi 5 giây; dữ liệu cũ hơn 90 giây báo có thể ngoại tuyến.
+- Chỉ số thiếu hiển thị dấu gạch; số 0 vẫn là 0.
+- Tên và thứ tự sự kiện, lệnh LOCATE và trạng thái chờ giữ nguyên.
+- Dùng vị trí hợp lệ gần nhất; bản tin mới thiếu GPS không xóa vị trí cũ.
+- Vị trí trong 300 giây được đánh dấu mới; Google Maps, sao chép tọa độ và về vị trí hiện tại tiếp tục hoạt động.
+- Các khoảng lịch sử 1/6/24/72 giờ; mốc ban đầu 24 giờ; đường đi ngắt khi khoảng cách thời gian lớn hơn 120 giây.
+- Giữ bộ lọc ẩn/hiện đường đi, điểm bắt đầu và thông báo giới hạn 1000 điểm.
+
+## Các trường hợp được làm rõ khi tách mã
+
+- Yêu cầu status đang chạy được dùng chung khi polling trùng thời điểm.
+- Lịch sử GPS tải chậm không giữ lại việc hiển thị nhịp tim/SOS mới.
+- Yêu cầu lịch sử cùng lựa chọn được dùng chung khi đang chờ; khi đổi lựa chọn, phản hồi cũ đến muộn không ghi đè lựa chọn mới.
+- API trả 401 sẽ chuyển về đăng nhập, áp dụng cho cả status, tracking và LOCATE.
+- Khi thư viện bản đồ không tải được, số đo/cảnh báo và tọa độ vẫn hoạt động; khung bản đồ hiển thị thông báo ngắn.
+- Tọa độ null không bị chuyển thành vị trí 0,0; tọa độ 0,0 thật vẫn được chấp nhận.
+
+## Kiểm tra
+
+`Kiem-tra.cmd` chạy kiểm thử Python, kiểm thử JavaScript bằng Node.js và kiểm tra các file dự kiến đưa vào Git.
+
+```powershell
+.venv\Scripts\python.exe -m unittest discover -s tests -p "test_*.py" -v
+.venv\Scripts\python.exe scripts\check_frontend.py
+```
+
+Kiểm thử JavaScript không dùng thư viện ngoài: chạy các module thật với fixture DOM/Leaflet và API giả. Chúng kiểm tra render số đo/SOS, polling, LOCATE, GPS, clipboard, lịch sử và phản hồi mạng sai thứ tự. Kiểm thử Python kiểm tra Jinja đã render, các URL cũ và toàn bộ đồ thị import module qua Flask, gồm MIME JavaScript/CSS.
+
+Đã đối chiếu DOM HTML render với snapshot trước giai đoạn 3 (chỉ khác URL tài nguyên và type module); toàn bộ token CSS giống bản trước, chỉ thay cách xuống dòng/thụt lề.
+
+Chrome headless không khởi động được trong môi trường thực thi do lỗi GPU/process access. Chủ dự án đã mở lại web, đăng nhập và xác nhận giao diện hiển thị bình thường trên trình duyệt thật. Chưa có ảnh kiểm tra tự động; kiểm thử fixture Leaflet không thay thế việc thử bản đồ thực tế với tọa độ thiết bị khi có mạng.
+
+Sau khi đổi thư mục tài nguyên, dừng tiến trình web cũ bằng Ctrl+C rồi mở lại `Chay-web.cmd` để nạp factory mới.

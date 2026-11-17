@@ -39,7 +39,7 @@ Luồng xử lý là route → service → repository. Route đọc HTTP và tr�
 
 ## Giao diện và API
 
-Factory dùng đường dẫn tuyệt đối đến `templates/` và `static/` ở gốc dự án. URL `/static/...`, HTML, CSS và JavaScript vẫn giữ nguyên. Việc chia frontend được thực hiện ở giai đoạn 3.
+Factory dùng đường dẫn tuyệt đối đến `frontend/templates/` và `frontend/static/` sau giai đoạn 3. URL `/static/...` vẫn được giữ, các thành phần frontend nằm ở thư mục riêng. Xem [cấu trúc frontend](frontend-architecture.md).
 
 Các Blueprint đổi cách tổ chức mã, giữ nguyên URL, phương thức HTTP, JSON và phản hồi văn bản NONE/LOCATE. Xem [hợp đồng API](api-contract.md).
 

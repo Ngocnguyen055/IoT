@@ -54,8 +54,10 @@ Theo mã firmware hiện có, thiết bị gửi chỉ số khoảng mỗi 15 gi
 
 - `config.local.json`: mật khẩu đăng nhập, khóa thiết bị và khóa phiên; không gửi file này công khai.
 - `iot_ngoc.sqlite3`: dữ liệu nhịp tim, GPS và sự kiện đã nhận. Không xóa nếu muốn giữ lịch sử.
-- `app.py`, `templates`, `static`: mã nguồn website của người làm sản phẩm.
+- `app.py`, `backend`, `frontend`: điểm vào và mã nguồn backend/frontend hiện tại.
 
 Không cần chạy file `app.cpython-313.pyc`. Hướng dẫn gốc trong repo đã thay các khóa bằng giá trị mẫu; bản sao trước thay đổi nằm trong `.runtime/backups/`.
 
 Chạy `Kiem-tra.cmd` để kiểm tra phần mềm trên database tạm. Tiến độ cải tổ: [docs/refactor-plan.md](docs/refactor-plan.md).
+
+Giai đoạn 3 chuyển tài nguyên sang `frontend/`. Sau khi cập nhật mã, dừng cửa sổ web cũ bằng Ctrl+C rồi mở lại `Chay-web.cmd`; trình duyệt tải dashboard và các module mới từ cùng Flask server.

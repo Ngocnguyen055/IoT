@@ -25,11 +25,26 @@ Môi trường agent chỉ đọc metadata `.git`; chủ dự án trực tiếp 
 - [x] Các kiểm thử API cũ đạt; bổ sung kiểm thử cách ly ứng dụng, các dạng JSON bất thường và điểm vào chạy web.
 - [x] Viết [tài liệu backend](backend-architecture.md) và cập nhật các thay đổi lỗi đầu vào trong hợp đồng API.
 - [x] Hoàn tất xác minh cuối: 33 kiểm thử đạt; HTTP thực tế trên database tạm đạt; dữ liệu/cấu hình/firmware/frontend thật không đổi; diff và file đưa lên Git đạt.
-- [ ] Chủ dự án commit/push giai đoạn 2.
+- [x] Chủ dự án đã commit/push giai đoạn 2: `c13533c` (`gd2`); HEAD và origin/main cùng mốc khi bắt đầu giai đoạn 3.
 
 Chạy `Chot-giai-doan-2.cmd` bằng tài khoản Windows của chủ dự án để kiểm tra lại, stage đúng các file backend/launcher/kiểm thử/tài liệu, kiểm tra index rồi commit/push. Môi trường agent vẫn chỉ đọc metadata Git; công cụ giai đoạn 1 dành cho mốc cũ.
 
 Kết quả giai đoạn 2: 33 kiểm thử tự động đạt; kiểm tra HTTP thực tế đã xác minh login, SOS, status, LOCATE, bản tin remote và GPS history trên database tạm ở cổng riêng. Server tạm đã dừng. SHA-256 của cấu hình, database, firmware và frontend thật giống trước giai đoạn này; database integrity đạt, 312 số đo.
+
+## Giai đoạn 3 — tách frontend
+
+- [x] Bắt đầu từ commit sạch `c13533c`, sao lưu tại `.runtime/backups/snapshot-20261117T022432738642Z/` (312 số đo, 1 dòng lệnh).
+- [x] Chuyển HTML/CSS/JavaScript vào `frontend/`, dùng Jinja base template và ES module trực tiếp trên trình duyệt.
+- [x] Tách API, số đo/polling, cảnh báo, vị trí GPS, bản đồ, lịch sử và định dạng dữ liệu.
+- [x] Cập nhật đường dẫn tài nguyên của factory; giữ loader tương thích cho URL tài nguyên cũ.
+- [x] 36 kiểm thử Python và 17 kiểm thử JavaScript đạt; DOM render khớp bản trước và CSS chỉ đổi định dạng.
+- [x] Xử lý polling trùng, lịch sử GPS chậm và phản hồi cũ đến muộn; có kiểm thử hồi quy.
+- [x] Cấu hình, database và firmware thật giữ nguyên so với trước giai đoạn này.
+- [x] Chủ dự án đã mở lại web, đăng nhập và xác nhận giao diện hiển thị bình thường trên trình duyệt thật. Kiểm tra ảnh tự động bằng Chrome headless bị giới hạn do GPU/process access trong môi trường thử.
+- [x] Hoàn tất rà soát cuối: `Kiem-tra.cmd` đạt 36 Python + 17 JavaScript, kiểm tra file đưa lên Git/diff đạt; sao lưu bản mới tại `.runtime/backups/snapshot-20261117T024007321381Z/`.
+- [ ] Chủ dự án commit/push giai đoạn 3.
+
+Sau khi xem giao diện bình thường bằng `Chay-web.cmd`, chạy `Chot-giai-doan-3.cmd` để kiểm tra lại và commit/push. Script stage thư mục frontend mới và các file đã đổi, đồng thời stage việc xóa `templates/` và `static/` cũ; có thể chạy lại nếu commit thành công nhưng push chưa xong.
 
 ## Lộ trình tiếp theo
 
@@ -61,10 +76,10 @@ Firmware sẽ được chia module trong một đợt riêng sau khi web/databas
 - Chưa thử lại trên phần cứng sau thay đổi cách cấp cấu hình; phần thử thiết bị nằm ở giai đoạn 6.
 - Kết nối HTTPS tới GitHub từ môi trường thực thi hiện bị chặn; cần xác nhận riêng việc đồng bộ remote.
 
-## Tiếp theo: giai đoạn 3
+## Tiếp theo: giai đoạn 4
 
-- Tách JavaScript thành phần gọi API, hiển thị số đo, cảnh báo, bản đồ và lịch sử GPS.
-- Giữ giao diện và URL API, tiếp tục kiểm tra đăng nhập, cập nhật dữ liệu và lệnh định vị.
-- Chọn vị trí frontend rõ ràng, cập nhật đường dẫn tài nguyên của factory và hướng dẫn chạy tương ứng.
+- Chọn MongoDB local hoặc cloud theo môi trường chủ dự án muốn vận hành.
+- Thiết kế collection/index và repository MongoDB với cùng hợp đồng dữ liệu hiện tại.
+- Chạy trên database thử; dữ liệu thật SQLite chỉ chuyển ở giai đoạn 5.
 
 Mỗi giai đoạn kết thúc bằng cập nhật file này, kết quả kiểm tra và commit riêng. Ghi rõ phần chưa hoàn thành để tiếp tục ở phiên sau.

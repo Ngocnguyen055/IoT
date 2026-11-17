@@ -12,8 +12,8 @@ from .services.monitoring import MonitoringService
 def create_app(config=None):
     app = Flask(
         __name__,
-        template_folder=str(ROOT / "templates"),
-        static_folder=str(ROOT / "static"),
+        template_folder=str(ROOT / "frontend" / "templates"),
+        static_folder=str(ROOT / "frontend" / "static"),
         static_url_path="/static",
     )
     app.config.from_mapping(build_config(config))

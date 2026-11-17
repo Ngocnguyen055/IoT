@@ -40,7 +40,7 @@ class BackupTests(unittest.TestCase):
 
 class RepositoryGuardTests(unittest.TestCase):
     def test_private_paths_are_blocked_and_examples_allowed(self):
-        for path in ("config.local.json", ".runtime/backup.txt", ".venv/a.py", "iot_ngoc.sqlite3", "firmware/ESP32_Firmware/device_config.local.h", ".env"):
+        for path in ("config.local.json", ".runtime/backup.txt", ".venv/a.py", "iot_ngoc.sqlite3", "firmware/ESP32_Firmware/device_config.local.h", ".env", "frontend/node_modules/package/index.js"):
             self.assertTrue(forbidden_path(path), path)
         for path in ("config.example.json", ".env.example", "firmware/ESP32_Firmware/device_config.example.h", "app.py"):
             self.assertFalse(forbidden_path(path), path)

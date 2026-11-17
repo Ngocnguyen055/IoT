@@ -14,7 +14,7 @@ def forbidden_path(path):
     value = path.replace("\\", "/")
     parts = value.split("/")
     name = parts[-1]
-    return (bool({".venv", ".runtime", "__pycache__"}.intersection(parts))
+    return (bool({".venv", ".runtime", "__pycache__", "node_modules"}.intersection(parts))
             or name == "config.local.json" or name.endswith(".local.h")
             or name.endswith((".pyc", ".log", ".sqlite3", ".sqlite3-wal", ".sqlite3-shm"))
             or (name.startswith(".env") and name != ".env.example"))

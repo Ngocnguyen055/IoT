@@ -43,13 +43,16 @@ Các kiểm thử dùng SQLite và cấu hình tạm trong `.runtime`, không g�
 
 Lệnh firmware chạy kiểm thử trên máy tính và biên dịch ra object ESP32; không nạp thiết bị. Thử với phần cứng thật là bước riêng.
 
+Từ giai đoạn 3, `Kiem-tra.cmd` chạy thêm kiểm thử JavaScript bằng Node.js có sẵn trên máy. Không có thư viện npm cần cài. Node.js phục vụ kiểm thử; chạy web vẫn chỉ cần Python và các thư viện trong `requirements.txt`.
+
 ## Tài liệu cải tổ
 
 - [Tiến độ và các giai đoạn](docs/refactor-plan.md)
 - [Hợp đồng API đang dùng](docs/api-contract.md)
 - [Mốc trước cải tổ và khôi phục](docs/baseline.md)
 - [Cấu trúc backend sau giai đoạn 2](docs/backend-architecture.md)
+- [Cấu trúc frontend sau giai đoạn 3](docs/frontend-architecture.md)
 
-Giai đoạn 1 đã chốt tại commit `2c201da`. Backend ở giai đoạn 2 được chia module trong `backend/app/`, tiếp tục Flask/SQLite. `app.py` giữ vai trò điểm vào tương thích. Frontend vẫn dùng HTML/CSS/JavaScript ở `templates/` và `static/`; việc tách frontend và chuyển MongoDB thực hiện ở các giai đoạn tiếp theo.
+Giai đoạn 1 đã chốt tại commit `2c201da`, giai đoạn 2 tại `c13533c`. Backend nằm trong `backend/app/`, tiếp tục Flask/SQLite; `app.py` là điểm vào tương thích. Frontend HTML/CSS/JavaScript nằm trong `frontend/`, nạp ES module trực tiếp trên trình duyệt. MongoDB được tích hợp ở giai đoạn 4 và chuyển dữ liệu ở giai đoạn 5.
 
-Trước khi commit bản mới, chạy `Kiem-tra.cmd` và kiểm tra nội dung thay đổi trong Git. Để lưu mốc backend, chạy `Chot-giai-doan-2.cmd`; file sẽ kiểm tra, stage các file của giai đoạn 2 (gồm cả `backend/`), kiểm tra index rồi commit/push. `Chot-giai-doan-1.cmd` là công cụ cũ dành riêng cho mốc giai đoạn 1.
+Sau khi đổi vị trí tài nguyên ở giai đoạn 3, dừng cửa sổ web cũ bằng Ctrl+C rồi mở lại `Chay-web.cmd`. Khi giao diện đã được kiểm tra, dùng `Chot-giai-doan-3.cmd` để kiểm tra lại, commit và push mốc frontend. Trạng thái xác nhận nằm trong `docs/refactor-plan.md`; các file `Chot-giai-doan-1.cmd`/`Chot-giai-doan-2.cmd` dành riêng cho các mốc trước.

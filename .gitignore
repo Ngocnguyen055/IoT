@@ -12,3 +12,4 @@ config.local.json
 firmware/ESP32_Firmware/device_config.local.h
 .coverage
 htmlcov/
+node_modules/

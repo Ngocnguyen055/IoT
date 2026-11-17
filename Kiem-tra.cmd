@@ -7,6 +7,8 @@ if not exist ".venv\Scripts\python.exe" (
 )
 ".venv\Scripts\python.exe" -m unittest discover -s tests -p "test_*.py" -v
 if errorlevel 1 goto failed
+".venv\Scripts\python.exe" scripts\check_frontend.py
+if errorlevel 1 goto failed
 ".venv\Scripts\python.exe" scripts\check_repository.py
 if errorlevel 1 goto failed
 echo.
