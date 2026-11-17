@@ -40,7 +40,7 @@ class BackupTests(unittest.TestCase):
 
 class RepositoryGuardTests(unittest.TestCase):
     def test_private_paths_are_blocked_and_examples_allowed(self):
-        for path in ("config.local.json", ".runtime/backup.txt", ".venv/a.py", "iot_ngoc.sqlite3", "firmware/ESP32_Firmware/device_config.local.h", ".env", "frontend/node_modules/package/index.js"):
+        for path in ("config.local.json", "mongodb.local.json", "mongodb.local.json.tmp", ".runtime/backup.txt", ".venv/a.py", "iot_ngoc.sqlite3", "firmware/ESP32_Firmware/device_config.local.h", ".env", "frontend/node_modules/package/index.js"):
             self.assertTrue(forbidden_path(path), path)
         for path in ("config.example.json", ".env.example", "firmware/ESP32_Firmware/device_config.example.h", "app.py"):
             self.assertFalse(forbidden_path(path), path)
@@ -52,6 +52,13 @@ class RepositoryGuardTests(unittest.TestCase):
         self.assertNotIn(secret, " ".join(messages))
         self.assertTrue(content_problems("header.h", 'key = "' + "a" * 64 + '";'))
         self.assertEqual(content_problems("example.h", 'key = "REPLACE_WITH_YOUR_DEVICE_KEY";'), [])
+
+    def test_mongodb_uri_credentials_are_blocked_but_examples_are_allowed(self):
+        uri = "mongodb+srv://" + "sample-user:private-test-password@cluster.mongodb.net/"
+        messages = content_problems("settings.py", uri)
+        self.assertTrue(messages)
+        self.assertNotIn("private-test-password", " ".join(messages))
+        self.assertEqual(content_problems("mongodb.example.json", "mongodb+srv://YOUR_USER:YOUR_PASSWORD@YOUR_CLUSTER.mongodb.net/"), [])
 
 
 if __name__ == "__main__":

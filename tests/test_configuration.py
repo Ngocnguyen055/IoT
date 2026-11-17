@@ -59,6 +59,12 @@ class ConfigurationTests(unittest.TestCase):
         with patch.dict(os.environ, {"ADMIN_PASSWORD": "environment-test-admin"}, clear=True):
             self.assertEqual(project_config.application_config(), {**VALUES, "ADMIN_PASSWORD": "environment-test-admin"})
 
+    def test_optional_storage_settings_are_preserved_from_private_configuration(self):
+        settings = {**VALUES, "DATABASE_BACKEND": "sqlite"}
+        self.path.write_text(json.dumps(settings), encoding="utf-8")
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(project_config.application_config(), settings)
+
 
 class FirmwareConfigurationTests(unittest.TestCase):
     def setUp(self):

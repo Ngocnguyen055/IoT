@@ -17,7 +17,7 @@ if errorlevel 1 goto failed
 
 :install
 if not exist ".runtime" mkdir ".runtime"
-echo Dang cai Flask tu kho Python chinh thuc. Can ket noi Internet.
+echo Dang cai thu vien Python cho web va MongoDB tu kho chinh thuc. Can ket noi Internet.
 ".venv\Scripts\python.exe" -m pip --log .runtime\pip-install.log install --index-url https://pypi.org/simple --disable-pip-version-check -r requirements.txt
 if errorlevel 1 goto failed
 ".venv\Scripts\python.exe" -m pip check

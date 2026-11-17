@@ -42,9 +42,27 @@ Kết quả giai đoạn 2: 33 kiểm thử tự động đạt; kiểm tra HTTP
 - [x] Cấu hình, database và firmware thật giữ nguyên so với trước giai đoạn này.
 - [x] Chủ dự án đã mở lại web, đăng nhập và xác nhận giao diện hiển thị bình thường trên trình duyệt thật. Kiểm tra ảnh tự động bằng Chrome headless bị giới hạn do GPU/process access trong môi trường thử.
 - [x] Hoàn tất rà soát cuối: `Kiem-tra.cmd` đạt 36 Python + 17 JavaScript, kiểm tra file đưa lên Git/diff đạt; sao lưu bản mới tại `.runtime/backups/snapshot-20261117T024007321381Z/`.
-- [ ] Chủ dự án commit/push giai đoạn 3.
+- [x] Chủ dự án đã commit/push giai đoạn 3: `91dc438` (`gd3`); HEAD và origin/main cùng mốc khi bắt đầu giai đoạn 4.
 
 Sau khi xem giao diện bình thường bằng `Chay-web.cmd`, chạy `Chot-giai-doan-3.cmd` để kiểm tra lại và commit/push. Script stage thư mục frontend mới và các file đã đổi, đồng thời stage việc xóa `templates/` và `static/` cũ; có thể chạy lại nếu commit thành công nhưng push chưa xong.
+
+## Giai đoạn 4 — MongoDB Atlas
+
+- [x] Chủ dự án chọn MongoDB Atlas; bắt đầu từ commit sạch `91dc438`.
+- [x] Sao lưu tại `.runtime/backups/snapshot-20261117T045908415609Z/` (312 số đo, 1 dòng lệnh).
+- [x] Cài PyMongo 4.20.0, dnspython 2.9.2 và thư viện kiểm thử qua launcher trên máy chủ dự án.
+- [x] Viết repository MongoDB, chọn backend bằng cấu hình; mặc định web vẫn dùng SQLite.
+- [x] Giữ ID số/thứ tự/API/null; lưu số đo, cấp ID và xác nhận remote trong transaction.
+- [x] Bổ sung kiểm tra cấu hình, lỗi 503, bảo vệ file/URI riêng và kiểm thử cùng hợp đồng API bằng mongomock.
+- [x] Chuẩn bị công cụ cấu hình và kiểm tra Atlas thật trên database tạm; [hướng dẫn Atlas](mongodb-atlas.md).
+- [x] Kiểm tra cuối bằng `Kiem-tra.cmd --no-pause` đạt: 66 Python + 17 JavaScript, gồm kiểm thử hồi quy tên database tạm sau lỗi giới hạn 38 byte trên Atlas; kiểm tra file đưa lên Git đạt.
+- [x] Cấu hình Atlas đã lưu trong `mongodb.local.json` được Git bỏ qua; chủ dự án chạy kiểm tra Atlas thật đạt lúc 12:45 ngày 17/11/2026: 14 kiểm thử, 0 lỗi, gồm rollback transaction; không còn database tạm của lượt kiểm tra.
+- [x] Mặc định web vẫn SQLite, 312 số đo; cấu hình web/database/firmware thật giữ nguyên theo SHA-256 sau sửa công cụ kiểm tra.
+- [ ] Chốt commit/push giai đoạn 4 sau khi Atlas thật đạt.
+
+Chưa đổi backend đang dùng và chưa chuyển dữ liệu thật. Việc này thuộc giai đoạn 5. Kiểm thử mongomock không được ghi nhận thay cho kết quả transaction trên Atlas thật.
+
+Đã chuẩn bị `Chot-giai-doan-4.cmd`: kiểm tra cục bộ, chạy kiểm tra Atlas thật, sau đó mới stage/commit/push nếu mọi bước đạt. Kết quả Atlas đã xác nhận từ `.runtime/atlas-check.json` và `.runtime/atlas-check.log`; các file kết quả và cấu hình riêng không đưa lên Git. Chờ chủ dự án commit/push mốc giai đoạn 4 trước khi sửa tiếp giai đoạn 5.
 
 ## Lộ trình tiếp theo
 
@@ -76,10 +94,10 @@ Firmware sẽ được chia module trong một đợt riêng sau khi web/databas
 - Chưa thử lại trên phần cứng sau thay đổi cách cấp cấu hình; phần thử thiết bị nằm ở giai đoạn 6.
 - Kết nối HTTPS tới GitHub từ môi trường thực thi hiện bị chặn; cần xác nhận riêng việc đồng bộ remote.
 
-## Tiếp theo: giai đoạn 4
+## Tiếp theo: giai đoạn 5
 
-- Chọn MongoDB local hoặc cloud theo môi trường chủ dự án muốn vận hành.
-- Thiết kế collection/index và repository MongoDB với cùng hợp đồng dữ liệu hiện tại.
-- Chạy trên database thử; dữ liệu thật SQLite chỉ chuyển ở giai đoạn 5.
+- Chỉ bắt đầu khi Atlas thật đã vượt qua kiểm tra giai đoạn 4.
+- Viết công cụ chuyển SQLite sang MongoDB có đối chiếu, giữ ID/thời gian/null và không tạo trùng khi chạy lại.
+- Sao lưu trước khi chuyển; kiểm tra đủ bản ghi và lệnh, sau đó mới bật MongoDB cho web thật.
 
 Mỗi giai đoạn kết thúc bằng cập nhật file này, kết quả kiểm tra và commit riêng. Ghi rõ phần chưa hoàn thành để tiếp tục ở phiên sau.

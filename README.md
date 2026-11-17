@@ -4,6 +4,8 @@ Hệ thống thử nghiệm ESP32 gửi SOS, nhịp tim, SpO₂, điện áp/ph�
 
 ## Chạy trên Windows
 
+Dự án hiện dùng Python 3.11 trở lên, đã kiểm tra trên Python 3.12.14.
+
 1. Lần đầu, chạy `Cai-dat.cmd` để tạo môi trường Python và cài thư viện.
 2. Chạy `Chay-web.cmd`. Mở `http://127.0.0.1:5000`, dùng mật khẩu hiển thị trong cửa sổ chạy web.
 3. Khi cần kết nối thiết bị thật, chạy thêm `Ket-noi-thiet-bi.cmd`.
@@ -45,6 +47,10 @@ Lệnh firmware chạy kiểm thử trên máy tính và biên dịch ra object 
 
 Từ giai đoạn 3, `Kiem-tra.cmd` chạy thêm kiểm thử JavaScript bằng Node.js có sẵn trên máy. Không có thư viện npm cần cài. Node.js phục vụ kiểm thử; chạy web vẫn chỉ cần Python và các thư viện trong `requirements.txt`.
 
+Từ giai đoạn 4, cài thêm thư viện kiểm thử Python bằng `Cai-thu-vien-MongoDB.cmd` trước khi chạy đầy đủ `Kiem-tra.cmd`. Kết nối Atlas được cấu hình bằng `Tao-cau-hinh-MongoDB.cmd`, kiểm tra thật bằng `Kiem-tra-MongoDB.cmd`; web tiếp tục SQLite đến giai đoạn chuyển dữ liệu.
+
+`Chot-giai-doan-4.cmd` kiểm tra cục bộ và Atlas trước khi commit/push mốc MongoDB. Cần có cấu hình Atlas thật; SQLite đang dùng vẫn được giữ đến giai đoạn 5.
+
 ## Tài liệu cải tổ
 
 - [Tiến độ và các giai đoạn](docs/refactor-plan.md)
@@ -52,6 +58,7 @@ Từ giai đoạn 3, `Kiem-tra.cmd` chạy thêm kiểm thử JavaScript bằng 
 - [Mốc trước cải tổ và khôi phục](docs/baseline.md)
 - [Cấu trúc backend sau giai đoạn 2](docs/backend-architecture.md)
 - [Cấu trúc frontend sau giai đoạn 3](docs/frontend-architecture.md)
+- [MongoDB Atlas và cách kiểm tra kết nối](docs/mongodb-atlas.md)
 
 Giai đoạn 1 đã chốt tại commit `2c201da`, giai đoạn 2 tại `c13533c`. Backend nằm trong `backend/app/`, tiếp tục Flask/SQLite; `app.py` là điểm vào tương thích. Frontend HTML/CSS/JavaScript nằm trong `frontend/`, nạp ES module trực tiếp trên trình duyệt. MongoDB được tích hợp ở giai đoạn 4 và chuyển dữ liệu ở giai đoạn 5.
 

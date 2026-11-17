@@ -4,12 +4,12 @@ from flask import Flask
 
 from project_config import ROOT
 from .config import build_config
-from .repositories.sqlite import SQLiteRepository
+from .repositories.factory import build_repository
 from .routes import register_routes
 from .services.monitoring import MonitoringService
 
 
-def create_app(config=None):
+def create_app(config=None, *, repository=None):
     app = Flask(
         __name__,
         template_folder=str(ROOT / "frontend" / "templates"),
@@ -18,7 +18,8 @@ def create_app(config=None):
     )
     app.config.from_mapping(build_config(config))
 
-    repository = SQLiteRepository(app.config["DB_PATH"])
+    if repository is None:
+        repository = build_repository(app.config)
     repository.initialize()
     app.extensions["sos_repository"] = repository
     app.extensions["sos_service"] = MonitoringService(repository)

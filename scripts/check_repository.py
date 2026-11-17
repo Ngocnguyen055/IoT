@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+from urllib.parse import unquote_plus, urlsplit
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,7 +16,7 @@ def forbidden_path(path):
     parts = value.split("/")
     name = parts[-1]
     return (bool({".venv", ".runtime", "__pycache__", "node_modules"}.intersection(parts))
-            or name == "config.local.json" or name.endswith(".local.h")
+            or ".local.json" in name or name.endswith(".local.h")
             or name.endswith((".pyc", ".log", ".sqlite3", ".sqlite3-wal", ".sqlite3-shm"))
             or (name.startswith(".env") and name != ".env.example"))
 
@@ -30,6 +31,14 @@ def content_problems(path, content, private_values=()):
             break
     if re.search(r"(?i)(?<![a-f0-9])[a-f0-9]{64}(?![a-f0-9])", content):
         problems.append(f"{path}: review a literal 64-character hexadecimal value")
+    for uri in re.findall(r"mongodb(?:\+srv)?://[^\s'\"<>]+", content):
+        try:
+            password = urlsplit(uri).password
+        except ValueError:
+            continue
+        if password and not password.startswith(("YOUR_", "REPLACE_")):
+            problems.append(f"{path}: contains a credentialed MongoDB URI")
+            break
     return problems
 
 
@@ -46,6 +55,17 @@ def check_repository(staged=False):
     if config.exists():
         values = json.loads(config.read_text(encoding="utf-8-sig"))
         private_values = [values.get(key) for key in ("ADMIN_PASSWORD", "DEVICE_KEY", "SESSION_SECRET")]
+    mongo = ROOT / "mongodb.local.json"
+    if mongo.exists():
+        values = json.loads(mongo.read_text(encoding="utf-8-sig"))
+        uri = values.get("MONGODB_URI", "")
+        private_values.append(uri)
+        try:
+            password = urlsplit(uri).password
+            if password:
+                private_values.append(unquote_plus(password))
+        except ValueError:
+            pass
     arguments = ["ls-files", "-z", "--cached"]
     if not staged:
         arguments.extend(["--others", "--exclude-standard"])

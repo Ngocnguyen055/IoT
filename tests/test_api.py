@@ -10,6 +10,7 @@ from backend.app import create_app
 
 ROOT = Path(__file__).resolve().parents[1]
 TEST_CONFIG = {
+    "DATABASE_BACKEND": "sqlite",
     "ADMIN_PASSWORD": "test-admin-only",
     "DEVICE_KEY": "test-device-only",
     "SESSION_SECRET": "test-session-only",
@@ -28,10 +29,13 @@ class ApiContractTests(unittest.TestCase):
         cls.temporary.cleanup()
 
     def setUp(self):
-        self.app = create_app({**TEST_CONFIG, "DB_PATH": str(self.directory / (self._testMethodName + ".sqlite3")), "TESTING": True})
+        self.app = self.make_app(self.directory / (self._testMethodName + ".sqlite3"))
         self.repository = self.app.extensions["sos_repository"]
         self.client = self.app.test_client()
         self.headers = {"X-Device-Key": TEST_CONFIG["DEVICE_KEY"]}
+
+    def make_app(self, database):
+        return create_app({**TEST_CONFIG, "DB_PATH": str(database), "TESTING": True})
 
     def login(self):
         response = self.client.post("/login", data={"password": TEST_CONFIG["ADMIN_PASSWORD"]})
@@ -147,8 +151,8 @@ class ApiContractTests(unittest.TestCase):
                     self.assertEqual(self.post_reading(**{field: value}).status_code, 400)
         self.assertEqual(self.post_reading(lat=21, lon=None).status_code, 400)
         self.assertEqual(self.post_reading(lat=None, lon=105).status_code, 400)
-        with self.repository.connect() as db:
-            self.assertEqual(db.execute("SELECT COUNT(*) FROM readings").fetchone()[0], 0)
+        self.login()
+        self.assertEqual(self.client.get("/api/status").json["history"], [])
 
     def test_command_is_plain_text_and_retained_until_remote_upload(self):
         poll = lambda device="ngoc-01": self.client.get(

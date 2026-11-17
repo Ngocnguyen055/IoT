@@ -1,5 +1,6 @@
 {
   "ADMIN_PASSWORD": "",
   "DEVICE_KEY": "",
-  "SESSION_SECRET": ""
+  "SESSION_SECRET": "",
+  "DATABASE_BACKEND": "sqlite"
 }

@@ -34,4 +34,4 @@ def load_config():
 def application_config():
     """Allow isolated tests/deployments to supply all credentials via environment."""
     local = {} if all(os.environ.get(name) for name in REQUIRED_KEYS) else load_config()
-    return {name: os.environ.get(name) or local[name] for name in REQUIRED_KEYS}
+    return {**local, **{name: os.environ.get(name) or local[name] for name in REQUIRED_KEYS}}
