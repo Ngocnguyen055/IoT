@@ -30,7 +30,7 @@ class LauncherTests(unittest.TestCase):
         original_directory = Path.cwd()
         try:
             with (patch.object(run_local, "ROOT", self.directory),
-                  patch.object(run_local, "load_config", return_value=CREDENTIALS),
+                  patch.object(run_local, "application_config", return_value=CREDENTIALS),
                   patch("sys.argv", ["run_local.py", "--no-browser"]),
                   patch.object(run_local.urllib.request, "urlopen", side_effect=URLError("test: no running server")),
                   patch.object(run_local.webbrowser, "open") as browser,

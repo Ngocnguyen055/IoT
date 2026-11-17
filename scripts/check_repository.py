@@ -5,10 +5,12 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import sys
 from urllib.parse import unquote_plus, urlsplit
 
-
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from env_config import read_env
 
 
 def forbidden_path(path):
@@ -62,6 +64,16 @@ def check_repository(staged=False):
         private_values.append(uri)
         try:
             password = urlsplit(uri).password
+            if password:
+                private_values.append(unquote_plus(password))
+        except ValueError:
+            pass
+    env = ROOT / ".env"
+    if env.exists():
+        values = read_env(env)
+        private_values.extend(values.get(key) for key in ("ADMIN_PASSWORD", "DEVICE_KEY", "SESSION_SECRET", "MONGODB_URI"))
+        try:
+            password = urlsplit(values.get("MONGODB_URI", "")).password
             if password:
                 private_values.append(unquote_plus(password))
         except ValueError:

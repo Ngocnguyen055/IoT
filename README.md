@@ -20,10 +20,14 @@ Giữ cửa sổ web và tunnel mở khi sử dụng. Quick Tunnel có thể đ�
 - `config.example.json`: mô tả các trường cấu hình; các giá trị trống chỉ là mẫu, không thay cho file cấu hình đang dùng.
 - `device_config.local.h`: cấu hình thực tế để biên dịch ESP32, do script kết nối tạo; được Git bỏ qua.
 - `device_config.example.h`: ví dụ để đọc cấu trúc, không cần sửa để chạy bộ launcher.
-- `iot_ngoc.sqlite3`: dữ liệu số đo, cảnh báo và lệnh; hiện dùng SQLite.
+- `mongodb.local.json`: kết nối Atlas riêng trên máy, được Git bỏ qua.
+- `.env`: cấu hình chính sau khi chạy `python -m scripts.configure_env`; giữ nguyên mật khẩu/khóa/database từ cấu hình cũ và được Git bỏ qua. `.env.example` là mẫu.
+- `iot_ngoc.sqlite3`: dữ liệu SQLite ban đầu; được giữ lại sau khi chuyển sang Atlas.
 - `.runtime/backups/`: bản sao lưu riêng trên máy, có cả cấu hình và dữ liệu; được Git bỏ qua.
 
-Backend lấy cấu hình từ biến môi trường hoặc cấu hình riêng trên máy. `Chay-web.cmd` tiếp tục dùng `config.local.json` hiện có. Mã nguồn hiện tại không chứa khóa thực tế; lịch sử commit cũ được giữ nguyên theo lựa chọn của chủ dự án.
+Web và tunnel lấy cấu hình theo thứ tự biến môi trường, `.env`, rồi JSON cũ cho các giá trị còn thiếu. Mã nguồn hiện tại không chứa khóa thực tế; lịch sử commit cũ được giữ nguyên theo lựa chọn của chủ dự án. Xem [model, schema và cấu hình](docs/models-and-configuration.md).
+
+Khởi tạo collections/index/validators bằng `.venv\Scripts\python.exe -m scripts.init_db` hoặc `Khoi-tao-MongoDB.cmd`; không phải chạy lại migration dữ liệu.
 
 ## Kiểm tra và sao lưu
 
@@ -51,6 +55,8 @@ Từ giai đoạn 4, cài thêm thư viện kiểm thử Python bằng `Cai-thu-
 
 `Chot-giai-doan-4.cmd` kiểm tra cục bộ và Atlas trước khi commit/push mốc MongoDB. Cần có cấu hình Atlas thật; SQLite đang dùng vẫn được giữ đến giai đoạn 5.
 
+Từ giai đoạn 5, dừng web và thiết bị rồi chạy `Chuyen-sang-MongoDB.cmd` để kiểm tra, sao lưu, chuyển dữ liệu và bật MongoDB khi đối chiếu đạt. Sau đó mở lại `Chay-web.cmd`. Xem [hướng dẫn chuyển dữ liệu](docs/mongodb-migration.md). `Chot-giai-doan-5.cmd` kiểm tra backend và lưu mốc; dữ liệu/cấu hình riêng vẫn được Git bỏ qua.
+
 ## Tài liệu cải tổ
 
 - [Tiến độ và các giai đoạn](docs/refactor-plan.md)
@@ -59,6 +65,8 @@ Từ giai đoạn 4, cài thêm thư viện kiểm thử Python bằng `Cai-thu-
 - [Cấu trúc backend sau giai đoạn 2](docs/backend-architecture.md)
 - [Cấu trúc frontend sau giai đoạn 3](docs/frontend-architecture.md)
 - [MongoDB Atlas và cách kiểm tra kết nối](docs/mongodb-atlas.md)
+- [Chuyển dữ liệu và bật MongoDB cho web](docs/mongodb-migration.md)
+- [Model, lệnh init-db và cấu hình .env](docs/models-and-configuration.md)
 
 Giai đoạn 1 đã chốt tại commit `2c201da`, giai đoạn 2 tại `c13533c`. Backend nằm trong `backend/app/`, tiếp tục Flask/SQLite; `app.py` là điểm vào tương thích. Frontend HTML/CSS/JavaScript nằm trong `frontend/`, nạp ES module trực tiếp trên trình duyệt. MongoDB được tích hợp ở giai đoạn 4 và chuyển dữ liệu ở giai đoạn 5.
 

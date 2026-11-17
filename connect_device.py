@@ -9,7 +9,7 @@ import urllib.error
 import urllib.request
 from urllib.parse import urlsplit
 
-from project_config import load_config
+from project_config import application_config
 
 ROOT = Path(__file__).resolve().parent
 RUNTIME = ROOT / ".runtime"
@@ -55,7 +55,7 @@ def prepare_firmware(url):
     if (parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password
             or parsed.query or parsed.fragment or any(c.isspace() or c in '\"\\' for c in url)):
         raise ValueError("SERVER_BASE must be an HTTPS URL without whitespace or credentials")
-    config = load_config()
+    config = application_config()
     device_id = config.get("DEVICE_ID", "ngoc-01")
     if not isinstance(device_id, str) or not 1 <= len(device_id) <= 64:
         raise ValueError("DEVICE_ID must be a string of 1 to 64 characters")
@@ -78,7 +78,7 @@ def main():
     except (urllib.error.URLError, OSError) as error:
         raise RuntimeError("Hay mo Chay-web.cmd truoc, sau do chay lai file nay.") from error
 
-    load_config()
+    application_config()
     executable = download_cloudflared()
     print("Dang mo ket noi 4G toi web. Nhan Ctrl+C de dong ket noi.", flush=True)
     process = subprocess.Popen(

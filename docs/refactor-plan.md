@@ -58,11 +58,36 @@ Sau khi xem giao diện bình thường bằng `Chay-web.cmd`, chạy `Chot-giai
 - [x] Kiểm tra cuối bằng `Kiem-tra.cmd --no-pause` đạt: 66 Python + 17 JavaScript, gồm kiểm thử hồi quy tên database tạm sau lỗi giới hạn 38 byte trên Atlas; kiểm tra file đưa lên Git đạt.
 - [x] Cấu hình Atlas đã lưu trong `mongodb.local.json` được Git bỏ qua; chủ dự án chạy kiểm tra Atlas thật đạt lúc 12:45 ngày 17/11/2026: 14 kiểm thử, 0 lỗi, gồm rollback transaction; không còn database tạm của lượt kiểm tra.
 - [x] Mặc định web vẫn SQLite, 312 số đo; cấu hình web/database/firmware thật giữ nguyên theo SHA-256 sau sửa công cụ kiểm tra.
-- [ ] Chốt commit/push giai đoạn 4 sau khi Atlas thật đạt.
+- [x] Chủ dự án đã commit/push giai đoạn 4: `fe50407` (`gd4`); HEAD và origin/main cùng mốc, thư mục làm việc sạch khi bắt đầu giai đoạn 5.
 
 Chưa đổi backend đang dùng và chưa chuyển dữ liệu thật. Việc này thuộc giai đoạn 5. Kiểm thử mongomock không được ghi nhận thay cho kết quả transaction trên Atlas thật.
 
-Đã chuẩn bị `Chot-giai-doan-4.cmd`: kiểm tra cục bộ, chạy kiểm tra Atlas thật, sau đó mới stage/commit/push nếu mọi bước đạt. Kết quả Atlas đã xác nhận từ `.runtime/atlas-check.json` và `.runtime/atlas-check.log`; các file kết quả và cấu hình riêng không đưa lên Git. Chờ chủ dự án commit/push mốc giai đoạn 4 trước khi sửa tiếp giai đoạn 5.
+`Chot-giai-doan-4.cmd` kiểm tra cục bộ và Atlas trước khi stage/commit/push. Kết quả Atlas đã xác nhận từ `.runtime/atlas-check.json` và `.runtime/atlas-check.log`; các file kết quả và cấu hình riêng không đưa lên Git. Mốc `fe50407` đã được xác nhận trước khi sửa tiếp.
+
+## Giai đoạn 5 — chuyển dữ liệu và bật MongoDB
+
+- [x] Bắt đầu từ commit sạch `fe50407`, sao lưu tại `.runtime/backups/snapshot-20261117T055041789848Z/` (312 số đo, 1 dòng lệnh).
+- [x] Đọc SQLite ở chế độ chỉ đọc; giữ ID/thời gian/null/0 và sequence kể cả ID đã xóa.
+- [x] Viết migration trong transaction, chạy lại không trùng, nhận bản chuyển dở khớp và dừng nếu xung đột.
+- [x] Đối chiếu toàn bộ số đo/lệnh, counter, dashboard, GPS và API web trước khi đổi cấu hình.
+- [x] Bổ sung sao lưu, chặn khi web đang chạy/nguồn hoặc cấu hình vừa đổi; chỉ bật MongoDB sau khi đạt.
+- [x] Chuẩn bị kiểm thử Atlas tạm, launcher chuyển dữ liệu, kiểm tra backend sau chuyển và tài liệu [migration](mongodb-migration.md).
+- [x] `Kiem-tra.cmd --no-pause` đạt: 84 ca Python (83 đạt, 1 rollback dành cho Atlas thật), 17 JavaScript đạt; kiểm tra 103 file dự kiến đưa lên Git đạt. SHA-256 của cấu hình web/Atlas, SQLite và firmware thật giữ nguyên; web đã dừng trước bước chuyển thật.
+- [x] Chủ dự án chạy 10 kiểm thử migration trên Atlas thật, gồm rollback: 10 đạt, 0 lỗi, database tạm đã dọn; xác nhận từ `.runtime/migration-check.json`.
+- [x] Chuyển đủ 312 số đo và 1 dòng lệnh vào `iot_sos`, counter 312; dashboard/GPS/API khớp, đã bật MongoDB lúc 13:04 ngày 17/11/2026. Xác nhận từ `.runtime/migration-report.json` với `ok=true`, `state=mongodb_enabled`.
+- [x] Chủ dự án mở lại web và xác nhận giao diện hiển thị ổn sau khi đổi backend sang MongoDB, bổ sung model/schema và chuyển cấu hình sang `.env`.
+- [ ] Commit/push giai đoạn 5 sau khi xác nhận dữ liệu và giao diện.
+
+Bổ sung theo yêu cầu trước giai đoạn 6:
+
+- [x] Tách model Reading/DeviceCommand/ReadingCounter và dùng chung định nghĩa trường/range với validation, repository và schema.
+- [x] Viết `scripts.init_db` cùng launcher để tạo collections/index/counter, đối chiếu dữ liệu cũ và gắn validators; chạy lại không xóa dữ liệu.
+- [x] Cài python-dotenv 1.2.4, bổ sung `.env.example`, chuyển cấu hình riêng hiện có sang `.env`; giá trị hiệu lực của mật khẩu/khóa/URI/database khớp trước chuyển. JSON cũ, SQLite và firmware giữ nguyên SHA-256.
+- [x] Kiểm tra cục bộ trước đổi cấu hình: 98 ca Python (97 đạt, 1 dành cho rollback Atlas), 17 JavaScript đạt. Đã xác nhận 312 số đo và 1 lệnh trong bản SQLite giữ lại khớp model.
+- [x] Kiểm tra lại sau khi `.env` là cấu hình chính: 98 ca Python (97 đạt, 1 dành cho rollback Atlas), 17 JavaScript đạt; 118 file dự kiến đưa lên Git đạt, diff không lỗi khoảng trắng.
+- [x] Chủ dự án chạy `Khoi-tao-MongoDB.cmd`: cả hai kiểm thử schema trên Atlas thật đạt, không còn database tạm; đã gắn validators cho `iot_sos`. Báo cáo xác nhận 312 readings, 1 commands, 1 counters, counter 312; dữ liệu cũ được giữ. Xác nhận từ `.runtime/db-init-report.json` và `.runtime/schema-check.json`.
+
+Chủ dự án đã chạy `Chuyen-sang-MongoDB.cmd` thành công; bản sao lưu trước chuyển nằm tại `.runtime/backups/snapshot-20261117T060445234271Z/`. Web hiện dùng `iot_sos` trên Atlas; bản SQLite vẫn giữ lại. Giao diện đã được chủ dự án xác nhận ổn. Chờ commit/push giai đoạn 5 trước lượt thử phần cứng giai đoạn 6.
 
 ## Lộ trình tiếp theo
 
@@ -94,10 +119,10 @@ Firmware sẽ được chia module trong một đợt riêng sau khi web/databas
 - Chưa thử lại trên phần cứng sau thay đổi cách cấp cấu hình; phần thử thiết bị nằm ở giai đoạn 6.
 - Kết nối HTTPS tới GitHub từ môi trường thực thi hiện bị chặn; cần xác nhận riêng việc đồng bộ remote.
 
-## Tiếp theo: giai đoạn 5
+## Tiếp theo: hoàn tất giai đoạn 5
 
-- Chỉ bắt đầu khi Atlas thật đã vượt qua kiểm tra giai đoạn 4.
-- Viết công cụ chuyển SQLite sang MongoDB có đối chiếu, giữ ID/thời gian/null và không tạo trùng khi chạy lại.
-- Sao lưu trước khi chuyển; kiểm tra đủ bản ghi và lệnh, sau đó mới bật MongoDB cho web thật.
+- Migration Atlas tạm và chuyển dữ liệu thật đã đạt; báo cáo và bản sao lưu đã được xác nhận.
+- Giao diện đã được xác nhận ổn sau khi khởi động lại web dùng MongoDB và `.env`.
+- Lưu mốc bằng `Chot-giai-doan-5.cmd`; giai đoạn 6 mới thử lại thiết bị thật.
 
 Mỗi giai đoạn kết thúc bằng cập nhật file này, kết quả kiểm tra và commit riêng. Ghi rõ phần chưa hoàn thành để tiếp tục ở phiên sau.

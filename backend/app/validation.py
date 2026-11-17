@@ -1,21 +1,9 @@
 """Validate HTTP input as plain Python data, independently of Flask and storage."""
 
+from .models import EVENTS, MEASUREMENT_RANGES
 
 class ValidationError(ValueError):
     """A request cannot be accepted under the current API contract."""
-
-
-EVENTS = {"telemetry", "button", "high_bpm", "low_spo2", "remote"}
-MEASUREMENT_RANGES = {
-    "lat": (-90, 90),
-    "lon": (-180, 180),
-    "gps_satellites": (0, 100),
-    "bpm": (0, 300),
-    "spo2": (0, 100),
-    "battery_pct": (0, 100),
-    "battery_voltage": (0, 100),
-    "current_ma": (-10000, 10000),
-}
 
 
 def require_object(payload):

@@ -81,7 +81,7 @@ class FirmwareConfigurationTests(unittest.TestCase):
             self.addCleanup(item.stop)
 
     def prepare(self, url, config=None):
-        with patch.object(connect_device, "load_config", return_value=config or VALUES), contextlib.redirect_stdout(io.StringIO()):
+        with patch.object(connect_device, "application_config", return_value=config or VALUES), contextlib.redirect_stdout(io.StringIO()):
             connect_device.prepare_firmware(url)
 
     def test_only_local_header_is_generated_with_matching_values(self):

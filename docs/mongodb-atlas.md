@@ -2,7 +2,7 @@
 
 ## Trạng thái và phạm vi
 
-Web đang dùng SQLite như trước. Giai đoạn 4 bổ sung repository MongoDB và kiểm tra trên database tạm; dữ liệu thật được chuyển ở giai đoạn 5. Driver Python đã được cài bằng `Cai-thu-vien-MongoDB.cmd`.
+Giai đoạn 4 bổ sung repository MongoDB và kiểm tra trên database tạm. Máy chủ dự án đã chuyển sang database `iot_sos` trên Atlas ở giai đoạn 5 (312 số đo, 1 dòng lệnh tại mốc chuyển). Bản cài mới vẫn mặc định SQLite đến khi chạy công cụ chuyển. Driver Python được cài bằng `Cai-thu-vien-MongoDB.cmd`.
 
 Đã xác nhận kết nối Atlas thật ngày 17/11/2026: 14 kiểm thử đạt, gồm hợp đồng API và rollback transaction; các database thử của lượt kiểm tra đã được dọn sạch. Kết quả chi tiết lưu trên máy trong `.runtime/atlas-check.json` và `.runtime/atlas-check.log`.
 
@@ -64,6 +64,8 @@ Giai đoạn 4 chưa bật các giá trị này cho web đang dùng. Factory đ�
 - Cấu hình truyền trực tiếp có ưu tiên cao hơn biến môi trường, sau đó đến cấu hình riêng trên máy.
 
 Khi MongoDB được chọn mà thiếu driver/cấu hình/kết nối hợp lệ, ứng dụng báo lỗi; không âm thầm chuyển sang database khác. Việc chuyển dữ liệu và bật backend mới được thực hiện ở giai đoạn 5.
+
+Hướng dẫn chuyển dữ liệu và xác nhận backend: [Chuyển SQLite sang Atlas](mongodb-migration.md). Dùng `Chuyen-sang-MongoDB.cmd` sau khi dừng web; công cụ chỉ bật MongoDB sau khi sao lưu và đối chiếu đạt.
 
 ## Giới hạn kiểm thử mô phỏng
 

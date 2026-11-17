@@ -7,7 +7,7 @@ import urllib.error
 import urllib.request
 import webbrowser
 
-from project_config import ROOT, load_config
+from project_config import ROOT, application_config
 
 
 def main():
@@ -16,12 +16,12 @@ def main():
     args = parser.parse_args()
 
     os.chdir(ROOT)
-    config = load_config()
+    config = application_config()
     url = "http://127.0.0.1:5000"
     print(f"\nWeb: {url}", flush=True)
     print(f"Mat khau dang nhap: {config['ADMIN_PASSWORD']}", flush=True)
     print("Giu cua so nay mo. Dung web bang Ctrl+C.", flush=True)
-    print("Cau hinh duoc luu trong config.local.json.\n", flush=True)
+    print("Cau hinh: .env neu co; JSON cu duoc ho tro de tuong thich.\n", flush=True)
     try:
         with urllib.request.urlopen(url + "/login", timeout=1) as response:
             already_running = "IOT - Ngọc" in response.read().decode("utf-8")
@@ -34,7 +34,7 @@ def main():
         return
     from backend.app import create_app
 
-    app = create_app({**config, "DB_PATH": str(ROOT / "iot_ngoc.sqlite3")})
+    app = create_app({**config, "DB_PATH": config.get("DB_PATH", str(ROOT / "iot_ngoc.sqlite3"))})
     if not args.no_browser:
         timer = threading.Timer(1.5, webbrowser.open, args=(url,))
         timer.daemon = True

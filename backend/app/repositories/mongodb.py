@@ -8,12 +8,9 @@ from pymongo.read_concern import ReadConcern
 from pymongo.write_concern import WriteConcern
 
 from .errors import DatabaseUnavailable
+from ..models import DeviceCommand, READING_FIELDS, Reading, ReadingCounter
 
 
-READING_FIELDS = (
-    "device_id", "ts", "event", "lat", "lon", "gps_satellites",
-    "bpm", "spo2", "battery_pct", "battery_voltage", "current_ma",
-)
 GPS_FILTER = {"lat": {"$ne": None}, "lon": {"$ne": None}}
 
 
@@ -33,13 +30,7 @@ def storage_errors(function):
 def public_reading(document):
     if document is None:
         return None
-    reading = {field: document.get(field) for field in READING_FIELDS}
-    reading["id"] = int(document["_id"])
-    for field in ("gps_satellites", "bpm", "spo2"):
-        value = reading[field]
-        if isinstance(value, float) and value.is_integer():
-            reading[field] = int(value)
-    return reading
+    return Reading.from_document(document).to_public()
 
 
 class MongoDBRepository:
@@ -72,8 +63,7 @@ class MongoDBRepository:
             raise ValueError("MongoDB readings must use positive integer IDs")
         self.counters.update_one({"_id": "readings"}, {"$max": {"value": maximum}}, upsert=True)
         counter = self.counters.find_one({"_id": "readings"})
-        if not isinstance(counter["value"], int) or isinstance(counter["value"], bool):
-            raise ValueError("MongoDB readings counter must be an integer")
+        ReadingCounter.from_document(counter)
 
     def close(self):
         self.client.close()
@@ -94,7 +84,7 @@ class MongoDBRepository:
                 {"_id": "readings"}, {"$inc": {"value": 1}},
                 return_document=ReturnDocument.AFTER, session=session,
             )
-            document = {"_id": counter["value"], **reading, "ts": timestamp}
+            document = Reading(id=counter["value"], ts=timestamp, **reading).to_document()
             self.readings.insert_one(document, session=session)
             if reading["event"] == "remote":
                 self.commands.update_one({"_id": reading["device_id"]}, {"$set": {"cmd": "NONE"}}, session=session)
@@ -103,11 +93,12 @@ class MongoDBRepository:
     @storage_errors
     def pending_command(self, device_id):
         command = self.commands.find_one({"_id": device_id})
-        return command.get("cmd", "NONE") if command else "NONE"
+        return DeviceCommand.from_document(command).cmd if command else "NONE"
 
     @storage_errors
     def queue_locate(self, device_id):
-        self.commands.update_one({"_id": device_id}, {"$set": {"cmd": "LOCATE"}}, upsert=True)
+        command = DeviceCommand(device_id, "LOCATE")
+        self.commands.update_one({"_id": command.device_id}, {"$set": {"cmd": command.cmd}}, upsert=True)
 
     @storage_errors
     def dashboard_snapshot(self):

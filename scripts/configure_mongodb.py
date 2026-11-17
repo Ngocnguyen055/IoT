@@ -9,6 +9,7 @@ from urllib.parse import quote_plus
 
 from backend.app.mongodb_config import CONFIG_PATH, validate_mongodb_settings
 from project_config import ROOT
+from env_config import update_env
 
 
 def complete_atlas_uri(uri, *, username=None, password=None):
@@ -31,6 +32,14 @@ def complete_atlas_uri(uri, *, username=None, password=None):
 def save_settings(settings, destination=CONFIG_PATH):
     destination = Path(destination)
     settings = validate_mongodb_settings(settings)
+    env = ROOT / ".env"
+    if destination.resolve() == CONFIG_PATH.resolve() and env.exists():
+        backups = ROOT / ".runtime" / "backups"
+        backups.mkdir(parents=True, exist_ok=True)
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+        shutil.copy2(env, backups / ("env-" + stamp + ".env"))
+        update_env(env, settings)
+        return
     if destination.exists():
         backups = ROOT / ".runtime" / "backups"
         backups.mkdir(parents=True, exist_ok=True)
@@ -50,8 +59,8 @@ def main():
     uri = complete_atlas_uri(uri, username=username, password=password)
     database = input("Ten database ung dung [iot_sos]: ").strip() or "iot_sos"
     save_settings({"MONGODB_URI": uri, "MONGODB_DATABASE": database})
-    print("DA LUU CAU HINH vao mongodb.local.json.")
-    print("Web hien tai tiep tuc dung SQLite. Chay Kiem-tra-MongoDB.cmd de thu Atlas.")
+    print("DA LUU CAU HINH vao .env neu co, hoac mongodb.local.json.")
+    print("Backend dang dung duoc giu nguyen. Chay Kiem-tra-MongoDB.cmd de thu Atlas.")
 
 
 if __name__ == "__main__":
