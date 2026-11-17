@@ -3,7 +3,7 @@ setlocal
 cd /d "%~dp0"
 title Web SOS - giu cua so nay mo
 if not exist ".venv\Scripts\python.exe" goto install
-".venv\Scripts\python.exe" -c "import flask" >nul 2>nul
+".venv\Scripts\python.exe" -c "import flask, pymongo, dns, dotenv" >nul 2>nul
 if not errorlevel 1 goto run
 
 :install

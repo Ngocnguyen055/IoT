@@ -76,7 +76,7 @@ Chưa đổi backend đang dùng và chưa chuyển dữ liệu thật. Việc n
 - [x] Chủ dự án chạy 10 kiểm thử migration trên Atlas thật, gồm rollback: 10 đạt, 0 lỗi, database tạm đã dọn; xác nhận từ `.runtime/migration-check.json`.
 - [x] Chuyển đủ 312 số đo và 1 dòng lệnh vào `iot_sos`, counter 312; dashboard/GPS/API khớp, đã bật MongoDB lúc 13:04 ngày 17/11/2026. Xác nhận từ `.runtime/migration-report.json` với `ok=true`, `state=mongodb_enabled`.
 - [x] Chủ dự án mở lại web và xác nhận giao diện hiển thị ổn sau khi đổi backend sang MongoDB, bổ sung model/schema và chuyển cấu hình sang `.env`.
-- [ ] Commit/push giai đoạn 5 sau khi xác nhận dữ liệu và giao diện.
+- [x] Chủ dự án đã commit/push giai đoạn 5: `da4fb2e` (`gd5`); HEAD và origin/main cùng mốc, thư mục làm việc sạch trước khi bắt đầu giai đoạn 6.
 
 Bổ sung theo yêu cầu trước giai đoạn 6:
 
@@ -87,7 +87,23 @@ Bổ sung theo yêu cầu trước giai đoạn 6:
 - [x] Kiểm tra lại sau khi `.env` là cấu hình chính: 98 ca Python (97 đạt, 1 dành cho rollback Atlas), 17 JavaScript đạt; 118 file dự kiến đưa lên Git đạt, diff không lỗi khoảng trắng.
 - [x] Chủ dự án chạy `Khoi-tao-MongoDB.cmd`: cả hai kiểm thử schema trên Atlas thật đạt, không còn database tạm; đã gắn validators cho `iot_sos`. Báo cáo xác nhận 312 readings, 1 commands, 1 counters, counter 312; dữ liệu cũ được giữ. Xác nhận từ `.runtime/db-init-report.json` và `.runtime/schema-check.json`.
 
-Chủ dự án đã chạy `Chuyen-sang-MongoDB.cmd` thành công; bản sao lưu trước chuyển nằm tại `.runtime/backups/snapshot-20261117T060445234271Z/`. Web hiện dùng `iot_sos` trên Atlas; bản SQLite vẫn giữ lại. Giao diện đã được chủ dự án xác nhận ổn. Chờ commit/push giai đoạn 5 trước lượt thử phần cứng giai đoạn 6.
+Chủ dự án đã chạy `Chuyen-sang-MongoDB.cmd` thành công; bản sao lưu trước chuyển nằm tại `.runtime/backups/snapshot-20261117T060445234271Z/`. Web hiện dùng `iot_sos` trên Atlas; bản SQLite vẫn giữ lại. Giao diện đã được xác nhận ổn và giai đoạn 5 đã lưu tại `da4fb2e`.
+
+## Giai đoạn 6 — thử thiết bị thật và hoàn thiện hướng dẫn
+
+- [x] Bắt đầu từ commit sạch `da4fb2e`, sao lưu tại `.runtime/backups/snapshot-20261117T142643521657Z/`.
+- [x] Xác nhận web đang chạy, thiết bị đã được cắm lại, COM3, khóa firmware khớp cấu hình web và tunnel mới được chuẩn bị.
+- [x] Chủ dự án Upload firmware với header mới thành công; xác nhận hash và reset qua RTS.
+- [x] Tạo công cụ quan sát qua API, mốc ban đầu ID 312; chỉ tính bản tin mới đúng thiết bị, không gửi số đo giả vào database ứng dụng.
+- [x] Cập nhật hướng dẫn chạy theo `.env`/Atlas và viết [hướng dẫn kiểm thử thiết bị](device-verification.md).
+- [x] Kiểm tra cục bộ đạt: 102 ca Python (101 đạt, 1 rollback dành cho Atlas thật), 17 JavaScript đạt; kiểm tra 123 file dự kiến đưa lên Git đạt. Các kiểm thử mới bảo đảm dữ liệu cũ và bản ghi thiết bị khác không làm báo cáo phần cứng đạt nhầm.
+- [x] Quan sát 21 bản tin mới ID 313–333 từ thiết bị thật: có SOS, cảnh báo high_bpm, BPM/SpO₂, điện áp và phần trăm pin; dữ liệu được nhận qua API web.
+- [x] Xác nhận vòng lệnh LOCATE → remote → NONE từ thiết bị thật; có bản ghi yêu cầu trong `.runtime/device-command-request.json` và phản hồi trong `.runtime/device-check.json`.
+- [ ] GPS ngoài trời và vị trí/lịch sử GPS mới: chủ dự án chủ động hẹn thử sau vì đang ở trong phòng. Được ghi riêng là deferred, không ngăn chốt phạm vi thử trong phòng và không được ghi là đã có GPS fix.
+- [x] Chủ dự án dừng/mở lại web, đăng nhập và xác nhận sự kiện SOS vừa thử cùng lịch sử cũ vẫn đầy đủ; API sau mở lại tiếp tục nhận bản tin mới.
+- [x] Báo cáo thử trong phòng đạt theo phạm vi chủ dự án chấp nhận: `.runtime/device-check.json`, scope `indoor_gps_deferred`, 28 bản tin mới ID 313–340, SOS ID 319, remote ID 328, lệnh chờ NONE. Cờ GPS fix vẫn false.
+- [x] Kiểm tra cuối đạt: 103 ca Python (102 đạt, 1 rollback dành cho Atlas thật), 17 JavaScript đạt; kiểm tra 123 file dự kiến đưa lên Git đạt.
+- [ ] Chốt bằng `Chot-giai-doan-6.cmd` để kiểm tra lại các số đo đã chuyển/schema trên Atlas, commit/push mốc cuối. GPS ngoài trời được chủ dự án hẹn thử riêng sau.
 
 ## Lộ trình tiếp theo
 
@@ -119,10 +135,9 @@ Firmware sẽ được chia module trong một đợt riêng sau khi web/databas
 - Chưa thử lại trên phần cứng sau thay đổi cách cấp cấu hình; phần thử thiết bị nằm ở giai đoạn 6.
 - Kết nối HTTPS tới GitHub từ môi trường thực thi hiện bị chặn; cần xác nhận riêng việc đồng bộ remote.
 
-## Tiếp theo: hoàn tất giai đoạn 5
+## Tiếp theo: hoàn tất giai đoạn 6
 
-- Migration Atlas tạm và chuyển dữ liệu thật đã đạt; báo cáo và bản sao lưu đã được xác nhận.
-- Giao diện đã được xác nhận ổn sau khi khởi động lại web dùng MongoDB và `.env`.
-- Lưu mốc bằng `Chot-giai-doan-5.cmd`; giai đoạn 6 mới thử lại thiết bị thật.
+- Thử trong phòng đã đạt; lưu mốc bằng `Chot-giai-doan-6.cmd`.
+- Chủ dự án sẽ thử GPS ngoài trời sau; phần đó còn được ghi là chưa xác nhận.
 
 Mỗi giai đoạn kết thúc bằng cập nhật file này, kết quả kiểm tra và commit riêng. Ghi rõ phần chưa hoàn thành để tiếp tục ở phiên sau.

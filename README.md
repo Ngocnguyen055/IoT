@@ -67,6 +67,7 @@ Từ giai đoạn 5, dừng web và thiết bị rồi chạy `Chuyen-sang-Mongo
 - [MongoDB Atlas và cách kiểm tra kết nối](docs/mongodb-atlas.md)
 - [Chuyển dữ liệu và bật MongoDB cho web](docs/mongodb-migration.md)
 - [Model, lệnh init-db và cấu hình .env](docs/models-and-configuration.md)
+- [Thử thiết bị thật và đối chiếu dữ liệu mới](docs/device-verification.md)
 
 Giai đoạn 1 đã chốt tại commit `2c201da`, giai đoạn 2 tại `c13533c`. Backend nằm trong `backend/app/`, tiếp tục Flask/SQLite; `app.py` là điểm vào tương thích. Frontend HTML/CSS/JavaScript nằm trong `frontend/`, nạp ES module trực tiếp trên trình duyệt. MongoDB được tích hợp ở giai đoạn 4 và chuyển dữ liệu ở giai đoạn 5.
 
