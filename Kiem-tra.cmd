@@ -7,7 +7,7 @@ if not exist ".venv\Scripts\python.exe" (
 )
 ".venv\Scripts\python.exe" -c "import pymongo, mongomock, dns" >nul 2>nul
 if errorlevel 1 (
-    echo Hay chay Cai-thu-vien-MongoDB.cmd de cai thu vien kiem thu con thieu.
+    echo Hay chay Cai-thu-vien-kiem-thu.cmd de cai thu vien kiem thu con thieu.
     goto failed
 )
 ".venv\Scripts\python.exe" -m unittest discover -s tests -p "test_*.py" -v

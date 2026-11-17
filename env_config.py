@@ -12,7 +12,7 @@ def read_env(path):
     try:
         from dotenv import dotenv_values
     except ImportError:
-        raise RuntimeError("Run Cai-thu-vien-cau-hinh.cmd to install python-dotenv") from None
+        raise RuntimeError("Run Cai-dat.cmd to install python-dotenv") from None
     # Passwords and URI strings are literal, even when they contain ${...}.
     values = dotenv_values(path, encoding="utf-8-sig", interpolate=False)
     return {key: value for key, value in values.items() if value is not None}

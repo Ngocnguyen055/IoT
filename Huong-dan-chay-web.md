@@ -56,7 +56,7 @@ Theo mã firmware hiện có, thiết bị gửi chỉ số khoảng mỗi 15 gi
 - `.runtime/backups/`: các bản sao lưu riêng trên máy; dữ liệu mới sau chuyển nằm trong Atlas.
 - `app.py`, `backend`, `frontend`: điểm vào và mã nguồn backend/frontend hiện tại.
 
-Không cần chạy file `app.cpython-313.pyc`. Hướng dẫn gốc trong repo đã thay các khóa bằng giá trị mẫu; bản sao trước thay đổi nằm trong `.runtime/backups/`.
+Các bản sao lưu trước cải tổ nằm trong `.runtime/backups/`; lịch sử mã nguồn được giữ trên Git.
 
 Chạy `Kiem-tra.cmd` để kiểm tra phần mềm trên database tạm. Tiến độ cải tổ: [docs/refactor-plan.md](docs/refactor-plan.md).
 
@@ -64,4 +64,4 @@ Giai đoạn 3 chuyển tài nguyên sang `frontend/`. Sau khi cập nhật mã,
 
 Hướng dẫn model/schema và lệnh khởi tạo: [docs/models-and-configuration.md](docs/models-and-configuration.md). Các bước thử SOS, số đo, định vị và lưu trữ với thiết bị thật: [docs/device-verification.md](docs/device-verification.md).
 
-Dùng thường ngày: `Chay-web.cmd`, `Ket-noi-thiet-bi.cmd`, `Dung-web.cmd`. Các file `Chot-giai-doan-*.cmd` dùng để lưu mốc phát triển; không cần chạy khi chỉ mở web.
+Dùng thường ngày: `Chay-web.cmd`, `Ket-noi-thiet-bi.cmd`, `Dung-web.cmd`. Cài thư viện web bằng `Cai-dat.cmd`; nếu cần chạy bộ kiểm thử, cài thêm bằng `Cai-thu-vien-kiem-thu.cmd` rồi chạy `Kiem-tra.cmd`.

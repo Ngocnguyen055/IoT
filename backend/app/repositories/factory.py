@@ -12,7 +12,7 @@ def build_repository(settings):
         from pymongo.errors import PyMongoError
         from .mongodb import MongoDBRepository
     except ImportError:
-        raise RuntimeError("MongoDB driver missing; run Cai-thu-vien-MongoDB.cmd") from None
+        raise RuntimeError("MongoDB driver missing; run Cai-dat.cmd") from None
     try:
         client = MongoClient(
             settings["MONGODB_URI"],

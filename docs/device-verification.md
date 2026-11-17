@@ -54,7 +54,13 @@ Hàng đợi sự kiện hiện nằm trong RAM của ESP32. Không dùng việc
 
 ## Chốt mốc
 
-Sau khi đủ bằng chứng, chạy `Chot-giai-doan-6.cmd`: kiểm tra cục bộ, báo cáo thiết bị, các bản ghi đã chuyển còn nguyên và schema trên Atlas rồi commit/push. Báo cáo chứa dữ liệu thực nhưng được Git bỏ qua.
+Giai đoạn 6 đã được commit/push tại `d6d42df`. Khi cần xác minh lại, chạy `Kiem-tra.cmd` và các lệnh sau rồi lưu thay đổi bằng Git. Báo cáo chứa dữ liệu thực nhưng được Git bỏ qua.
+
+```powershell
+.venv\Scripts\python.exe -m scripts.check_device --require-complete
+.venv\Scripts\python.exe -m scripts.check_active_mongodb
+.venv\Scripts\python.exe -m scripts.init_db --check
+```
 
 Chủ dự án đã yêu cầu để lượt thử GPS ngoài trời sang sau vì hiện thiết bị ở trong phòng. Quyết định này được ghi trong báo cáo bằng `--defer-gps`; việc chốt lượt thử trong phòng vẫn yêu cầu SOS, BPM/SpO₂, pin, bản tin mới và vòng lệnh LOCATE hoàn tất. Cờ `gps_fix_received` vẫn giữ false đến khi có tọa độ thật, và phạm vi được ghi là `indoor_gps_deferred`.
 

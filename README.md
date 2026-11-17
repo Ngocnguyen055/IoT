@@ -31,7 +31,7 @@ Khởi tạo collections/index/validators bằng `.venv\Scripts\python.exe -m sc
 
 ## Kiểm tra và sao lưu
 
-Chạy `Kiem-tra.cmd` để kiểm tra API, cấu hình, công cụ sao lưu và các file dự kiến đưa lên Git.
+Lần đầu chạy bộ kiểm thử, dùng `Cai-thu-vien-kiem-thu.cmd` để cài các gói trong `requirements-test.txt`. Sau đó chạy `Kiem-tra.cmd` để kiểm tra API, cấu hình, công cụ sao lưu và các file dự kiến đưa lên Git. `Cai-dat.cmd` cài các thư viện cần cho web, gồm Flask, PyMongo và python-dotenv.
 
 Các lệnh tương đương từ PowerShell tại thư mục dự án:
 
@@ -51,11 +51,7 @@ Lệnh firmware chạy kiểm thử trên máy tính và biên dịch ra object 
 
 Từ giai đoạn 3, `Kiem-tra.cmd` chạy thêm kiểm thử JavaScript bằng Node.js có sẵn trên máy. Không có thư viện npm cần cài. Node.js phục vụ kiểm thử; chạy web vẫn chỉ cần Python và các thư viện trong `requirements.txt`.
 
-Từ giai đoạn 4, cài thêm thư viện kiểm thử Python bằng `Cai-thu-vien-MongoDB.cmd` trước khi chạy đầy đủ `Kiem-tra.cmd`. Kết nối Atlas được cấu hình bằng `Tao-cau-hinh-MongoDB.cmd`, kiểm tra thật bằng `Kiem-tra-MongoDB.cmd`; web tiếp tục SQLite đến giai đoạn chuyển dữ liệu.
-
-`Chot-giai-doan-4.cmd` kiểm tra cục bộ và Atlas trước khi commit/push mốc MongoDB. Cần có cấu hình Atlas thật; SQLite đang dùng vẫn được giữ đến giai đoạn 5.
-
-Từ giai đoạn 5, dừng web và thiết bị rồi chạy `Chuyen-sang-MongoDB.cmd` để kiểm tra, sao lưu, chuyển dữ liệu và bật MongoDB khi đối chiếu đạt. Sau đó mở lại `Chay-web.cmd`. Xem [hướng dẫn chuyển dữ liệu](docs/mongodb-migration.md). `Chot-giai-doan-5.cmd` kiểm tra backend và lưu mốc; dữ liệu/cấu hình riêng vẫn được Git bỏ qua.
+Kết nối Atlas được cấu hình bằng `Tao-cau-hinh-MongoDB.cmd`, kiểm tra thật bằng `Kiem-tra-MongoDB.cmd`. Nếu còn dùng SQLite và cần chuyển dữ liệu, dừng web/thiết bị rồi chạy `Chuyen-sang-MongoDB.cmd`; xem [hướng dẫn chuyển dữ liệu](docs/mongodb-migration.md). Máy này đã chuyển thành công sang Atlas.
 
 ## Tài liệu cải tổ
 
@@ -69,6 +65,6 @@ Từ giai đoạn 5, dừng web và thiết bị rồi chạy `Chuyen-sang-Mongo
 - [Model, lệnh init-db và cấu hình .env](docs/models-and-configuration.md)
 - [Thử thiết bị thật và đối chiếu dữ liệu mới](docs/device-verification.md)
 
-Giai đoạn 1 đã chốt tại commit `2c201da`, giai đoạn 2 tại `c13533c`. Backend nằm trong `backend/app/`, tiếp tục Flask/SQLite; `app.py` là điểm vào tương thích. Frontend HTML/CSS/JavaScript nằm trong `frontend/`, nạp ES module trực tiếp trên trình duyệt. MongoDB được tích hợp ở giai đoạn 4 và chuyển dữ liệu ở giai đoạn 5.
+Backend nằm trong `backend/app/`, frontend trong `frontend/`, firmware chính trong `firmware/ESP32_Firmware/`. `app.py` giữ điểm vào chạy Python tương thích; cấu hình chính của máy này là `.env`, database là MongoDB Atlas. Các sketch chẩn đoán cảm biến trong `firmware/` được giữ để xử lý lỗi phần cứng.
 
-Sau khi đổi vị trí tài nguyên ở giai đoạn 3, dừng cửa sổ web cũ bằng Ctrl+C rồi mở lại `Chay-web.cmd`. Khi giao diện đã được kiểm tra, dùng `Chot-giai-doan-3.cmd` để kiểm tra lại, commit và push mốc frontend. Trạng thái xác nhận nằm trong `docs/refactor-plan.md`; các file `Chot-giai-doan-1.cmd`/`Chot-giai-doan-2.cmd` dành riêng cho các mốc trước.
+Sáu giai đoạn cải tổ đã được lưu trên Git, mốc cuối là `d6d42df`. Các script commit/push riêng từng giai đoạn đã được bỏ sau khi hoàn tất; dùng Git hoặc Source Control của VS Code để lưu thay đổi tiếp theo. Lượt thử trong phòng đã đạt, GPS ngoài trời được chủ dự án hẹn thử sau. Chi tiết ở `docs/refactor-plan.md`.

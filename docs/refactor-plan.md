@@ -27,7 +27,7 @@ Môi trường agent chỉ đọc metadata `.git`; chủ dự án trực tiếp 
 - [x] Hoàn tất xác minh cuối: 33 kiểm thử đạt; HTTP thực tế trên database tạm đạt; dữ liệu/cấu hình/firmware/frontend thật không đổi; diff và file đưa lên Git đạt.
 - [x] Chủ dự án đã commit/push giai đoạn 2: `c13533c` (`gd2`); HEAD và origin/main cùng mốc khi bắt đầu giai đoạn 3.
 
-Chạy `Chot-giai-doan-2.cmd` bằng tài khoản Windows của chủ dự án để kiểm tra lại, stage đúng các file backend/launcher/kiểm thử/tài liệu, kiểm tra index rồi commit/push. Môi trường agent vẫn chỉ đọc metadata Git; công cụ giai đoạn 1 dành cho mốc cũ.
+Mốc giai đoạn 2 đã được chủ dự án kiểm tra và commit/push bằng tài khoản Windows. Các script lưu mốc từng giai đoạn được bỏ sau khi hoàn tất cải tổ; các commit vẫn giữ đầy đủ lịch sử.
 
 Kết quả giai đoạn 2: 33 kiểm thử tự động đạt; kiểm tra HTTP thực tế đã xác minh login, SOS, status, LOCATE, bản tin remote và GPS history trên database tạm ở cổng riêng. Server tạm đã dừng. SHA-256 của cấu hình, database, firmware và frontend thật giống trước giai đoạn này; database integrity đạt, 312 số đo.
 
@@ -44,7 +44,7 @@ Kết quả giai đoạn 2: 33 kiểm thử tự động đạt; kiểm tra HTTP
 - [x] Hoàn tất rà soát cuối: `Kiem-tra.cmd` đạt 36 Python + 17 JavaScript, kiểm tra file đưa lên Git/diff đạt; sao lưu bản mới tại `.runtime/backups/snapshot-20261117T024007321381Z/`.
 - [x] Chủ dự án đã commit/push giai đoạn 3: `91dc438` (`gd3`); HEAD và origin/main cùng mốc khi bắt đầu giai đoạn 4.
 
-Sau khi xem giao diện bình thường bằng `Chay-web.cmd`, chạy `Chot-giai-doan-3.cmd` để kiểm tra lại và commit/push. Script stage thư mục frontend mới và các file đã đổi, đồng thời stage việc xóa `templates/` và `static/` cũ; có thể chạy lại nếu commit thành công nhưng push chưa xong.
+Mốc giai đoạn 3 đã được kiểm tra giao diện và commit/push, gồm frontend mới và việc bỏ `templates/`/`static/` cũ.
 
 ## Giai đoạn 4 — MongoDB Atlas
 
@@ -62,7 +62,7 @@ Sau khi xem giao diện bình thường bằng `Chay-web.cmd`, chạy `Chot-giai
 
 Chưa đổi backend đang dùng và chưa chuyển dữ liệu thật. Việc này thuộc giai đoạn 5. Kiểm thử mongomock không được ghi nhận thay cho kết quả transaction trên Atlas thật.
 
-`Chot-giai-doan-4.cmd` kiểm tra cục bộ và Atlas trước khi stage/commit/push. Kết quả Atlas đã xác nhận từ `.runtime/atlas-check.json` và `.runtime/atlas-check.log`; các file kết quả và cấu hình riêng không đưa lên Git. Mốc `fe50407` đã được xác nhận trước khi sửa tiếp.
+Kết quả Atlas đã xác nhận từ `.runtime/atlas-check.json` và `.runtime/atlas-check.log`; các file kết quả và cấu hình riêng không đưa lên Git. Mốc `fe50407` đã được xác nhận trước khi sửa tiếp.
 
 ## Giai đoạn 5 — chuyển dữ liệu và bật MongoDB
 
@@ -103,7 +103,13 @@ Chủ dự án đã chạy `Chuyen-sang-MongoDB.cmd` thành công; bản sao lư
 - [x] Chủ dự án dừng/mở lại web, đăng nhập và xác nhận sự kiện SOS vừa thử cùng lịch sử cũ vẫn đầy đủ; API sau mở lại tiếp tục nhận bản tin mới.
 - [x] Báo cáo thử trong phòng đạt theo phạm vi chủ dự án chấp nhận: `.runtime/device-check.json`, scope `indoor_gps_deferred`, 28 bản tin mới ID 313–340, SOS ID 319, remote ID 328, lệnh chờ NONE. Cờ GPS fix vẫn false.
 - [x] Kiểm tra cuối đạt: 103 ca Python (102 đạt, 1 rollback dành cho Atlas thật), 17 JavaScript đạt; kiểm tra 123 file dự kiến đưa lên Git đạt.
-- [ ] Chốt bằng `Chot-giai-doan-6.cmd` để kiểm tra lại các số đo đã chuyển/schema trên Atlas, commit/push mốc cuối. GPS ngoài trời được chủ dự án hẹn thử riêng sau.
+- [x] Chủ dự án đã commit/push giai đoạn 6: `d6d42df` (`gd6`); HEAD và origin/main cùng mốc, thư mục làm việc sạch trước lượt dọn dẹp. GPS ngoài trời vẫn được hẹn thử riêng sau.
+
+## Dọn dẹp sau cải tổ
+
+- Bỏ các script commit/push một lần của sáu giai đoạn và hướng dẫn gốc đã được thay thế.
+- Cài thư viện web bằng `Cai-dat.cmd`; thư viện kiểm thử bổ sung bằng `Cai-thu-vien-kiem-thu.cmd`. Installer riêng cho dotenv được bỏ vì đã có trong requirements chính.
+- Dọn bytecode, kết quả biên dịch, log cài đặt/kiểm thử cũ và thư mục fixture còn sót. Giữ báo cáo xác minh có ích, cấu hình riêng, dữ liệu, Cloudflare và các bản sao lưu.
 
 ## Lộ trình tiếp theo
 
@@ -135,9 +141,9 @@ Firmware sẽ được chia module trong một đợt riêng sau khi web/databas
 - Chưa thử lại trên phần cứng sau thay đổi cách cấp cấu hình; phần thử thiết bị nằm ở giai đoạn 6.
 - Kết nối HTTPS tới GitHub từ môi trường thực thi hiện bị chặn; cần xác nhận riêng việc đồng bộ remote.
 
-## Tiếp theo: hoàn tất giai đoạn 6
+## Phần còn hẹn thử
 
-- Thử trong phòng đã đạt; lưu mốc bằng `Chot-giai-doan-6.cmd`.
+- Thử trong phòng đã đạt và giai đoạn 6 đã lưu tại `d6d42df`.
 - Chủ dự án sẽ thử GPS ngoài trời sau; phần đó còn được ghi là chưa xác nhận.
 
 Mỗi giai đoạn kết thúc bằng cập nhật file này, kết quả kiểm tra và commit riêng. Ghi rõ phần chưa hoàn thành để tiếp tục ở phiên sau.

@@ -41,6 +41,6 @@ SQLite lưu lịch sử đến thời điểm chuyển; các số đo nhận sau
 
 Để chỉ thử việc chuyển đổi trên database tạm, dùng `Kiem-tra-chuyen-du-lieu.cmd`; lệnh này không đổi backend hay dữ liệu ứng dụng.
 
-Sau khi kiểm tra giao diện, dùng `Chot-giai-doan-5.cmd` để kiểm thử cục bộ, xác nhận backend MongoDB và các số đo đã chuyển còn nguyên, rồi commit/push. Kiểm tra sau chuyển cho phép có số đo mới và lệnh đã thay đổi theo hoạt động thật.
+Sau khi kiểm tra giao diện, chạy `Kiem-tra.cmd` và `.venv\Scripts\python.exe -m scripts.check_active_mongodb` để xác nhận backend cùng các số đo đã chuyển còn nguyên, rồi commit/push bằng Git. Kiểm tra sau chuyển cho phép có số đo mới và lệnh đã thay đổi theo hoạt động thật.
 
 Phần lõi nằm trong `backend/app/migrations/sqlite_to_mongodb.py`. Công cụ điều phối, sao lưu và đổi cấu hình nằm trong `scripts/migrate_mongodb.py`; migration không tự chạy lúc khởi động web.

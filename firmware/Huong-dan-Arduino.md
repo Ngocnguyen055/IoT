@@ -50,7 +50,7 @@ Nếu báo thiếu file .h, đối chiếu phần thư viện ở bước 3. N�
 
 1. Chọn **Tools → Serial Monitor**, đặt tốc độ **115200 baud**.
 2. Chờ thiết bị đăng ký mạng 4G. Khi gửi thành công, mã firmware in ra **[UPLOAD] OK**.
-3. Mở http://127.0.0.1:5000 và đăng nhập bằng mật khẩu trong config.local.json.
+3. Mở http://127.0.0.1:5000 và đăng nhập bằng mật khẩu hiển thị ở cửa sổ web, tương ứng `ADMIN_PASSWORD` trong `.env`.
 4. Kiểm tra chỉ số, sau đó bấm nút SOS trên thiết bị và xem **Cảnh báo & sự kiện**.
 
-Lệnh yêu cầu định vị trên web cần thiết bị đang có mạng và GPS đã bắt được vệ tinh. Nếu không có dữ liệu, nội dung Serial Monitor sẽ giúp phân biệt lỗi cảm biến, mạng 4G và gửi HTTPS.
+Lệnh yêu cầu định vị cần thiết bị đang có mạng; để trả tọa độ thì GPS phải bắt được vệ tinh. Thiết bị vẫn có thể phản hồi lệnh với tọa độ trống khi chưa có GPS fix. Nếu không có dữ liệu, nội dung Serial Monitor sẽ giúp phân biệt lỗi cảm biến, mạng 4G và gửi HTTPS.

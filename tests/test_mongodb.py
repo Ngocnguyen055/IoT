@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 HAVE_MONGO = bool(importlib.util.find_spec("pymongo") and importlib.util.find_spec("mongomock"))
 
 
-@unittest.skipUnless(HAVE_MONGO, "Run Cai-thu-vien-MongoDB.cmd first")
+@unittest.skipUnless(HAVE_MONGO, "Run Cai-thu-vien-kiem-thu.cmd first")
 class AtlasVerificationTests(unittest.TestCase):
     def test_verification_names_fit_atlas_limit_and_cleanup_is_isolated(self):
         from scripts import check_mongodb
@@ -61,7 +61,7 @@ class AtlasVerificationTests(unittest.TestCase):
         control.close.assert_called_once()
 
 
-@unittest.skipUnless(HAVE_MONGO, "Run Cai-thu-vien-MongoDB.cmd first")
+@unittest.skipUnless(HAVE_MONGO, "Run Cai-thu-vien-kiem-thu.cmd first")
 class MongoApiContractTests(contract.ApiContractTests):
     def make_app(self, database):
         import mongomock
@@ -148,7 +148,7 @@ class MongoConfigurationTests(unittest.TestCase):
             complete_atlas_uri("mongodb+srv://YOUR_USER:<db_password>@YOUR_CLUSTER.mongodb.net/")
 
 
-@unittest.skipUnless(HAVE_MONGO, "Run Cai-thu-vien-MongoDB.cmd first")
+@unittest.skipUnless(HAVE_MONGO, "Run Cai-thu-vien-kiem-thu.cmd first")
 class MongoRepositoryTests(unittest.TestCase):
     def repository(self):
         import mongomock

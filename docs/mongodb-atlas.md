@@ -2,7 +2,7 @@
 
 ## Trạng thái và phạm vi
 
-Giai đoạn 4 bổ sung repository MongoDB và kiểm tra trên database tạm. Máy chủ dự án đã chuyển sang database `iot_sos` trên Atlas ở giai đoạn 5 (312 số đo, 1 dòng lệnh tại mốc chuyển). Bản cài mới vẫn mặc định SQLite đến khi chạy công cụ chuyển. Driver Python được cài bằng `Cai-thu-vien-MongoDB.cmd`.
+Giai đoạn 4 bổ sung repository MongoDB và kiểm tra trên database tạm. Máy chủ dự án đã chuyển sang database `iot_sos` trên Atlas ở giai đoạn 5 (312 số đo, 1 dòng lệnh tại mốc chuyển). Bản cài mới vẫn mặc định SQLite đến khi chạy công cụ chuyển. Driver Python được cài bằng `Cai-dat.cmd`; bộ kiểm thử cục bộ được cài thêm qua `Cai-thu-vien-kiem-thu.cmd`.
 
 Đã xác nhận kết nối Atlas thật ngày 17/11/2026: 14 kiểm thử đạt, gồm hợp đồng API và rollback transaction; các database thử của lượt kiểm tra đã được dọn sạch. Kết quả chi tiết lưu trên máy trong `.runtime/atlas-check.json` và `.runtime/atlas-check.log`.
 
@@ -39,7 +39,7 @@ Các database thử được dọn sau kiểm tra; database ứng dụng `iot_so
 
 Nếu lỗi, kiểm tra cluster đã sẵn sàng, IP máy đã được cho phép, mật khẩu là của database user và quyền đọc/ghi đúng. Công cụ không tắt kiểm tra TLS khi kết nối lỗi.
 
-Khi sẵn sàng chốt giai đoạn 4, có thể chạy `Chot-giai-doan-4.cmd`. File sẽ chạy kiểm tra cục bộ và Atlas, rồi commit/push sau khi đạt. Nếu kiểm tra riêng đã đạt nhưng muốn tránh chạy lặp, bạn có thể tự commit/push các thay đổi qua Git như các giai đoạn trước.
+Để xác minh lại, chạy `Kiem-tra.cmd` và `Kiem-tra-MongoDB.cmd`. Các mốc cải tổ đã được commit/push; dùng Git thông thường để lưu những thay đổi tiếp theo.
 
 ## Thiết kế lưu trữ
 

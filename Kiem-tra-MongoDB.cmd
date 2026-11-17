@@ -8,7 +8,7 @@ if not exist ".venv\Scripts\python.exe" (
 )
 ".venv\Scripts\python.exe" -c "import pymongo, dns" >nul 2>nul
 if errorlevel 1 (
-    echo Hay chay Cai-thu-vien-MongoDB.cmd truoc.
+    echo Hay chay Cai-dat.cmd truoc.
     goto failed
 )
 ".venv\Scripts\python.exe" -m scripts.check_mongodb
