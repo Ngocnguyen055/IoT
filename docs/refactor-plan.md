@@ -12,9 +12,24 @@ Ngày ghi nhận: 17/11/2026. Mốc trước cải tổ: `1fc3c32`.
 - [x] Bổ sung kiểm thử cấu hình, sao lưu và kiểm tra file trước khi đưa vào Git.
 - [x] Viết hợp đồng API, hướng dẫn chạy, sao lưu và khôi phục.
 - [x] Chạy xác minh cuối cùng: 24 kiểm thử đạt; firmware host tests và biên dịch object ESP32 đạt; kiểm tra file đưa lên Git đạt.
-- [ ] Lưu commit/tag giai đoạn 1; đồng bộ GitHub khi kết nối cho phép.
+- [x] Chủ dự án đã lưu và push giai đoạn 1: commit `2c201da` (`gd1`); HEAD và origin/main cùng mốc khi bắt đầu giai đoạn 2.
 
-Phần mã và kiểm tra đã sẵn sàng. Môi trường agent chỉ được đọc metadata `.git`, nên lệnh stage bị chặn ở `index.lock`; HTTPS tới GitHub cũng bị chặn. Chủ dự án chạy `Chot-giai-doan-1.cmd` bằng tài khoản Windows bình thường để kiểm tra lại, stage đúng các file giai đoạn 1, kiểm tra index, commit và push. Script dừng nếu kiểm tra lỗi; nếu commit đã có mà push lỗi, có thể chạy lại để tiếp tục push.
+Môi trường agent chỉ đọc metadata `.git`; chủ dự án trực tiếp commit/push bằng tài khoản Windows. Việc đồng bộ giai đoạn 1 đã được xác nhận trước khi sửa tiếp.
+
+## Giai đoạn 2 — tách backend
+
+- [x] Bắt đầu từ commit sạch `2c201da`, sao lưu tại `.runtime/backups/snapshot-20261117T010919145734Z/` (312 số đo, 1 dòng lệnh).
+- [x] Tạo factory `create_app(config)` với cấu hình và repository/service riêng cho từng ứng dụng.
+- [x] Tách routes web/device/dashboard, xác thực, validation, service và repository SQLite.
+- [x] Giữ điểm vào `app.py`, cập nhật launcher dùng factory, giữ đường dẫn template/static hiện tại.
+- [x] Các kiểm thử API cũ đạt; bổ sung kiểm thử cách ly ứng dụng, các dạng JSON bất thường và điểm vào chạy web.
+- [x] Viết [tài liệu backend](backend-architecture.md) và cập nhật các thay đổi lỗi đầu vào trong hợp đồng API.
+- [x] Hoàn tất xác minh cuối: 33 kiểm thử đạt; HTTP thực tế trên database tạm đạt; dữ liệu/cấu hình/firmware/frontend thật không đổi; diff và file đưa lên Git đạt.
+- [ ] Chủ dự án commit/push giai đoạn 2.
+
+Chạy `Chot-giai-doan-2.cmd` bằng tài khoản Windows của chủ dự án để kiểm tra lại, stage đúng các file backend/launcher/kiểm thử/tài liệu, kiểm tra index rồi commit/push. Môi trường agent vẫn chỉ đọc metadata Git; công cụ giai đoạn 1 dành cho mốc cũ.
+
+Kết quả giai đoạn 2: 33 kiểm thử tự động đạt; kiểm tra HTTP thực tế đã xác minh login, SOS, status, LOCATE, bản tin remote và GPS history trên database tạm ở cổng riêng. Server tạm đã dừng. SHA-256 của cấu hình, database, firmware và frontend thật giống trước giai đoạn này; database integrity đạt, 312 số đo.
 
 ## Lộ trình tiếp theo
 
@@ -46,12 +61,10 @@ Firmware sẽ được chia module trong một đợt riêng sau khi web/databas
 - Chưa thử lại trên phần cứng sau thay đổi cách cấp cấu hình; phần thử thiết bị nằm ở giai đoạn 6.
 - Kết nối HTTPS tới GitHub từ môi trường thực thi hiện bị chặn; cần xác nhận riêng việc đồng bộ remote.
 
-## Điểm cần xử lý ở giai đoạn 2
+## Tiếp theo: giai đoạn 3
 
-- Tạo `create_app()` và cho kiểm thử truyền cấu hình/database trực tiếp.
-- Tách validation, xử lý đầy đủ các kiểu JSON bất thường đã ghi trong tài liệu API.
-- Giữ repository SQLite sau lớp truy cập riêng để chuẩn bị MongoDB.
-- Tách nhóm API thiết bị, API dashboard và trang đăng nhập.
-- Di chuyển file theo từng phần, kiểm tra lại các launcher và đường dẫn template/static.
+- Tách JavaScript thành phần gọi API, hiển thị số đo, cảnh báo, bản đồ và lịch sử GPS.
+- Giữ giao diện và URL API, tiếp tục kiểm tra đăng nhập, cập nhật dữ liệu và lệnh định vị.
+- Chọn vị trí frontend rõ ràng, cập nhật đường dẫn tài nguyên của factory và hướng dẫn chạy tương ứng.
 
 Mỗi giai đoạn kết thúc bằng cập nhật file này, kết quả kiểm tra và commit riêng. Ghi rõ phần chưa hoàn thành để tiếp tục ở phiên sau.

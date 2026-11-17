@@ -48,7 +48,8 @@ Lệnh firmware chạy kiểm thử trên máy tính và biên dịch ra object 
 - [Tiến độ và các giai đoạn](docs/refactor-plan.md)
 - [Hợp đồng API đang dùng](docs/api-contract.md)
 - [Mốc trước cải tổ và khôi phục](docs/baseline.md)
+- [Cấu trúc backend sau giai đoạn 2](docs/backend-architecture.md)
 
-Giai đoạn 1 tạo nền kiểm thử và tài liệu. Backend vẫn dùng Flask/SQLite, frontend vẫn dùng HTML/CSS/JavaScript. Việc chia module và chuyển MongoDB được thực hiện theo các giai đoạn tiếp theo.
+Giai đoạn 1 đã chốt tại commit `2c201da`. Backend ở giai đoạn 2 được chia module trong `backend/app/`, tiếp tục Flask/SQLite. `app.py` giữ vai trò điểm vào tương thích. Frontend vẫn dùng HTML/CSS/JavaScript ở `templates/` và `static/`; việc tách frontend và chuyển MongoDB thực hiện ở các giai đoạn tiếp theo.
 
-Để lưu và đẩy bản giai đoạn 1 đã chuẩn bị lên repo hiện tại, chạy `Chot-giai-doan-1.cmd`. File này kiểm tra phần mềm và index trước khi commit/push, dùng Git đã đăng nhập trên máy chủ dự án. Thông báo thành công có mã commit để xác nhận mốc.
+Trước khi commit bản mới, chạy `Kiem-tra.cmd` và kiểm tra nội dung thay đổi trong Git. Để lưu mốc backend, chạy `Chot-giai-doan-2.cmd`; file sẽ kiểm tra, stage các file của giai đoạn 2 (gồm cả `backend/`), kiểm tra index rồi commit/push. `Chot-giai-doan-1.cmd` là công cụ cũ dành riêng cho mốc giai đoạn 1.

@@ -1,12 +1,11 @@
 """Characterize the current HTTP contract using isolated SQLite databases."""
 
-import importlib.util
-import os
 from pathlib import Path
 import tempfile
 import time
 import unittest
-from unittest.mock import patch
+
+from backend.app import create_app
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,20 +22,15 @@ class ApiContractTests(unittest.TestCase):
         (ROOT / ".runtime").mkdir(exist_ok=True)
         cls.temporary = tempfile.TemporaryDirectory(prefix="api-tests-", dir=ROOT / ".runtime")
         cls.directory = Path(cls.temporary.name)
-        spec = importlib.util.spec_from_file_location("sos_contract_under_test", ROOT / "app.py")
-        cls.server = importlib.util.module_from_spec(spec)
-        with patch.dict(os.environ, {**TEST_CONFIG, "DB_PATH": str(cls.directory / "initial.sqlite3")}):
-            spec.loader.exec_module(cls.server)
-        cls.server.app.config.update(TESTING=True)
 
     @classmethod
     def tearDownClass(cls):
         cls.temporary.cleanup()
 
     def setUp(self):
-        self.server.DB = str(self.directory / (self._testMethodName + ".sqlite3"))
-        self.server.init_db()
-        self.client = self.server.app.test_client()
+        self.app = create_app({**TEST_CONFIG, "DB_PATH": str(self.directory / (self._testMethodName + ".sqlite3")), "TESTING": True})
+        self.repository = self.app.extensions["sos_repository"]
+        self.client = self.app.test_client()
         self.headers = {"X-Device-Key": TEST_CONFIG["DEVICE_KEY"]}
 
     def login(self):
@@ -54,7 +48,7 @@ class ApiContractTests(unittest.TestCase):
         return self.client.post("/api/device/telemetry", json=payload, headers=self.headers)
 
     def seed(self, rows):
-        with self.server.connect() as db:
+        with self.repository.connect() as db:
             db.executemany(
                 "INSERT INTO readings(device_id,ts,event,lat,lon) VALUES(?,?,?,?,?)", rows
             )
@@ -153,7 +147,7 @@ class ApiContractTests(unittest.TestCase):
                     self.assertEqual(self.post_reading(**{field: value}).status_code, 400)
         self.assertEqual(self.post_reading(lat=21, lon=None).status_code, 400)
         self.assertEqual(self.post_reading(lat=None, lon=105).status_code, 400)
-        with self.server.connect() as db:
+        with self.repository.connect() as db:
             self.assertEqual(db.execute("SELECT COUNT(*) FROM readings").fetchone()[0], 0)
 
     def test_command_is_plain_text_and_retained_until_remote_upload(self):

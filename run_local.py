@@ -17,11 +17,6 @@ def main():
 
     os.chdir(ROOT)
     config = load_config()
-    os.environ.update(config)
-    os.environ["DB_PATH"] = str(ROOT / "iot_ngoc.sqlite3")
-
-    from app import app
-
     url = "http://127.0.0.1:5000"
     print(f"\nWeb: {url}", flush=True)
     print(f"Mat khau dang nhap: {config['ADMIN_PASSWORD']}", flush=True)
@@ -37,6 +32,9 @@ def main():
         if not args.no_browser:
             webbrowser.open(url)
         return
+    from backend.app import create_app
+
+    app = create_app({**config, "DB_PATH": str(ROOT / "iot_ngoc.sqlite3")})
     if not args.no_browser:
         timer = threading.Timer(1.5, webbrowser.open, args=(url,))
         timer.daemon = True

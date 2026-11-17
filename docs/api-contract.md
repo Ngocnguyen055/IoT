@@ -100,6 +100,6 @@ Chỉ lấy các dòng có đủ lat/lon, đúng thiết bị, `ts >= now - hour
 ## Lưu ý cho giai đoạn sau
 
 - API hiện tập trung một thiết bị; cần thiết kế bộ lọc status khi mở rộng nhiều thiết bị.
-- Một số dạng JSON bất thường chưa được xử lý đầy đủ: ví dụ JSON list không rỗng ở `/api/command`, hoặc `event` là list/object. Cần bổ sung kiểm tra kiểu ở giai đoạn backend, kèm kiểm thử và ghi nhận thay đổi lỗi 500 → 400.
+- Đã xử lý ở giai đoạn 2: JSON sai dạng ở `/api/command`, `event` là list/object và số nguyên quá lớn trả 400 thay vì có thể gây 500. Các yêu cầu hợp lệ giữ nguyên cấu trúc phản hồi. Với command không phải JSON object (kể cả null/JSON hỏng), thông báo lỗi được thống nhất thành `JSON required`.
 - Lệnh chưa có ID/ack riêng; quy tắc hiện tại là bản tin `remote` thành công xóa lệnh đang chờ.
 - Khi chuyển MongoDB cần giữ ID/thứ tự, Unix giây, null, số 0, đơn vị và các phản hồi xác thực/lệnh ở trên.
