@@ -4,6 +4,8 @@ Hệ thống thử nghiệm ESP32 gửi SOS, nhịp tim, SpO₂, điện áp/ph�
 
 Thanh điều hướng có **Trang chủ** (số đo trực tiếp và 8 sự kiện mới nhất) và **Lịch sử** (20 sự kiện mỗi trang, nút Trước/Sau). Lịch sử gồm SOS, cảnh báo nhịp tim/SpO₂ và phản hồi định vị; không liệt kê các bản tin định kỳ. Chọn **Về mới nhất** để cập nhật sự kiện mới khi đang xem lịch sử. Xem [cách phân trang và kiểm tra truy vấn](docs/alert-history.md).
 
+Bấm một sự kiện để xem tọa độ đã lưu của nó: điểm màu cam trên bản đồ tách riêng khỏi ghim vị trí mới nhất. Sự kiện thiếu GPS được thông báo rõ, không thay bằng vị trí hiện tại. Có thể mở từ cả danh sách Trang chủ và bảng Lịch sử.
+
 ## Clone và chạy lần đầu trên Windows
 
 Dự án cần Python 3.11 trở lên, đã kiểm tra trên Python 3.12.14. Máy cần Internet để cài thư viện. Kiểm tra `python --version` trước; nếu chưa có Python, cài từ [python.org](https://www.python.org/downloads/windows/). Các lệnh dưới chạy trong PowerShell; cần Git để dùng `git clone`.

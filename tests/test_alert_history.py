@@ -40,9 +40,41 @@ class HistoryContract:
     def test_history_requires_admin_session_even_with_device_key(self):
         anonymous = self.app.test_client()
         self.assertEqual(anonymous.get("/history").headers["Location"], "/login")
-        for endpoint in ("/api/alerts", "/api/dashboard"):
+        for endpoint in ("/api/alerts", "/api/alerts/1", "/api/dashboard"):
             self.assertEqual(anonymous.get(endpoint, headers={"X-Device-Key": CONFIG["DEVICE_KEY"]}).status_code, 401)
         self.assertEqual(self.client.get("/history").status_code, 200)
+
+    def test_event_lookup_keeps_the_original_coordinates_even_after_newer_packets(self):
+        self.repository.save_reading(telemetry_payload({"device_id": "history-device", "event": "button", "lat": 0, "lon": 0, "bpm": 0}), 1000)
+        self.repository.save_reading(telemetry_payload({"device_id": "history-device", "event": "telemetry", "lat": 21, "lon": 105}), 2000)
+        self.repository.save_reading(telemetry_payload({"device_id": "history-device", "event": "high_bpm"}), 3000)
+        first = self.client.get("/api/alerts/1")
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(set(first.json), {"item"})
+        self.assertEqual((first.json["item"]["lat"], first.json["item"]["lon"], first.json["item"]["ts"]), (0, 0, 1000))
+        self.assertEqual(first.json["item"]["bpm"], 0)
+        self.assertNotIn("_id", first.json["item"])
+        missing_gps = self.client.get("/api/alerts/3").json["item"]
+        self.assertIsNone(missing_gps["lat"])
+        self.assertIsNone(missing_gps["lon"])
+
+    def test_event_lookup_rejects_invalid_ids_and_hides_non_event_readings(self):
+        self.repository.save_reading(telemetry_payload({"device_id": "history-device"}), 1000)
+        for identifier in ("1", "999"):
+            response = self.client.get("/api/alerts/" + identifier)
+            self.assertEqual(response.status_code, 404)
+            self.assertIn("error", response.json)
+        for identifier in ("0", "-1", "1.5", "abc", "9223372036854775808", "12345678901234567890", "١"):
+            with self.subTest(identifier=identifier):
+                self.assertEqual(self.client.get("/api/alerts/" + identifier).status_code, 400)
+
+    def test_event_lookup_can_open_old_events_outside_the_home_list(self):
+        self.seed(30)
+        home_ids = [item["id"] for item in self.client.get("/api/dashboard").json["alerts"]]
+        self.assertNotIn(2, home_ids)
+        result = self.client.get("/api/alerts/2")
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json["item"]["id"], 2)
 
     def test_empty_history_and_explicit_zero_snapshot(self):
         for parameters in ({}, {"snapshot": 0}):

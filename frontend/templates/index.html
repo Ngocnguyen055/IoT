@@ -49,6 +49,15 @@
           <label class="track-toggle"><input id="showTrack" type="checkbox" checked> Hiện đường đi</label>
           <button id="followGps" type="button" class="outline">Về vị trí hiện tại</button>
         </div>
+        <section id="eventLocation" class="event-location" aria-labelledby="eventLocationTitle" hidden>
+          <div class="panel-title">
+            <h3 id="eventLocationTitle">Vị trí sự kiện đã chọn</h3>
+            <button id="closeEventLocation" class="outline" type="button">Đóng</button>
+          </div>
+          <p id="eventLocationTime" class="muted"></p>
+          <p id="eventLocationMessage" role="status" aria-live="polite"></p>
+          <a id="eventGoogleMaps" class="text-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Mở vị trí sự kiện trên Google Maps ↗</a>
+        </section>
         <div class="tracking-toolbar basemap-toolbar">
           <label for="basemapSource">Nền bản đồ:</label>
           <select id="basemapSource">
@@ -88,6 +97,7 @@
           <a class="text-link" href="{{ url_for('web.history') }}">Xem tất cả →</a>
         </div>
         <p class="muted">Tối đa 8 sự kiện mới nhất</p>
+        <p class="muted">Bấm vào sự kiện để xem vị trí đã ghi nhận.</p>
         <div id="alerts">Chưa có sự kiện</div>
       </article>
     </section>

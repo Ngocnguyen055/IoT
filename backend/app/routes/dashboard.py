@@ -33,6 +33,15 @@ def track():
     return jsonify(service().track(request.args.get("device_id", "ngoc-01"), request.args.get("hours", "24")))
 
 
+@blueprint.get("/alerts/<reading_id>")
+@admin_auth
+def alert_detail(reading_id):
+    item = service().alert(reading_id)
+    if item is None:
+        return jsonify(error="Không tìm thấy sự kiện."), 404
+    return jsonify(item=item)
+
+
 @blueprint.post("/command")
 @admin_auth
 def issue_command():

@@ -32,7 +32,7 @@ export function createMapView(root, leaflet = globalThis.L, {ResizeObserverImpl 
       const control = root.getElementById(id);
       if (control) control.disabled = true;
     }
-    return {setPosition() {}, renderTrack() {}, follow: () => false};
+    return {setPosition() {}, renderTrack() {}, clearEvent() {}, showEvent: () => false, follow: () => false};
   }
   const map = leaflet.map('map').setView([16.4, 106.2], 5);
   createBasemap(root, leaflet, map);
@@ -42,9 +42,25 @@ export function createMapView(root, leaflet = globalThis.L, {ResizeObserverImpl 
     map.on('unload', () => observer.disconnect());
   }
   const trackLayers = leaflet.layerGroup().addTo(map);
-  let pin = null, firstPositionShown = false;
+  let pin = null, eventPin = null, firstPositionShown = false;
+  function clearEvent() {
+    if (eventPin) eventPin.remove();
+    eventPin = null;
+  }
 
   return {
+    clearEvent,
+    showEvent(point, popup) {
+      clearEvent();
+      const position = coordinates(point);
+      if (!position) return false;
+      eventPin = leaflet.circleMarker(position, {radius: 10, color: '#fbbf24', weight: 3, fillColor: '#f59e0b', fillOpacity: .5}).addTo(map);
+      map.invalidateSize({pan: false, debounceMoveend: true});
+      map.setView(position, 17);
+      eventPin.bindPopup(popup).openPopup();
+      firstPositionShown = true;
+      return true;
+    },
     setPosition(point) {
       const position = coordinates(point);
       if (!position) return;

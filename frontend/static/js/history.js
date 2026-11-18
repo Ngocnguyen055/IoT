@@ -38,14 +38,24 @@ export function createHistoryView(root) {
       }
       for (const item of items) {
         const row = root.createElement('tr');
-        const event = root.createElement('td'), badge = root.createElement('span');
-        badge.className = 'event-badge' + (item.event === 'button' ? ' danger' : ['high_bpm', 'low_spo2'].includes(item.event) ? ' warning' : '');
+        const event = root.createElement('td'), badge = root.createElement('a');
+        badge.className = 'event-badge event-location-link' + (item.event === 'button' ? ' danger' : ['high_bpm', 'low_spo2'].includes(item.event) ? ' warning' : '');
+        badge.href = `/?event=${encodeURIComponent(item.id)}#eventLocation`;
+        badge.title = 'Xem vị trí đã lưu của sự kiện';
         badge.textContent = eventTitle(item.event);
         event.append(badge);
         const position = coordinates(item);
+        const location = cell('Chưa có tọa độ');
+        if (position) {
+          const link = root.createElement('a');
+          link.className = 'text-link';
+          link.href = badge.href;
+          link.textContent = position.map(value => value.toFixed(5)).join(', ');
+          location.replaceChildren(link);
+        }
         row.append(cell(formatTime(item.ts)), event, cell(item.device_id), cell(measurement(item.bpm, 'BPM')),
           cell(measurement(item.spo2, '%')), cell(measurement(item.battery_pct, '%')),
-          cell(position ? position.map(value => value.toFixed(5)).join(', ') : 'Chưa có tọa độ'));
+          location);
         rows.append(row);
       }
       element('historyPage').textContent = `Trang ${page}`;

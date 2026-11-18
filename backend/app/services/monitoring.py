@@ -2,7 +2,7 @@
 
 import time
 
-from ..validation import alert_parameters, command_payload, telemetry_payload, track_parameters
+from ..validation import alert_identifier, alert_parameters, command_payload, telemetry_payload, track_parameters
 
 
 class MonitoringService:
@@ -26,6 +26,9 @@ class MonitoringService:
 
     def alerts(self, snapshot=None, before=None, after=None):
         return self.repository.alert_page(**alert_parameters(snapshot, before, after))
+
+    def alert(self, identifier):
+        return self.repository.alert_by_id(alert_identifier(identifier))
 
     def track(self, device_id, hours):
         device_id, hours = track_parameters(device_id, hours)

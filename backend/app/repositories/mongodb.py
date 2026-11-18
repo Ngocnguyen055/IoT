@@ -116,6 +116,10 @@ class MongoDBRepository:
         return result
 
     @storage_errors
+    def alert_by_id(self, identifier):
+        return public_reading(self.readings.find_one({"_id": identifier, **alert_filter()}))
+
+    @storage_errors
     def alert_page(self, snapshot=None, before=None, after=None):
         query = alert_filter(snapshot, before, after)
         direction = ASCENDING if after is not None else DESCENDING

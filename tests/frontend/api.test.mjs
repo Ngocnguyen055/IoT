@@ -25,10 +25,22 @@ test('API client keeps endpoint, query encoding, cookies and LOCATE JSON contrac
 test('401 on any API redirects once and returns a distinct authentication error', async () => {
   let redirects = 0;
   const api = createApi({fetchImpl: async () => ({status: 401}), onUnauthorized: () => { redirects++; }});
-  for (const request of [() => api.status(), () => api.alerts(), () => api.track('ngoc-01', 24), () => api.locate('ngoc-01')]) {
+  for (const request of [() => api.status(), () => api.alerts(), () => api.alert(1), () => api.track('ngoc-01', 24), () => api.locate('ngoc-01')]) {
     await assert.rejects(request, LoginRequiredError);
   }
   assert.equal(redirects, 1);
+});
+
+test('single event lookup encodes the ID and keeps the common request contract', async () => {
+  let call;
+  const api = createApi({fetchImpl: async (url, options) => {
+    call = {url, options};
+    return {status: 200, ok: true, json: async () => ({item: {id: 42}})};
+  }});
+  assert.deepEqual(await api.alert('42 /?'), {item: {id: 42}});
+  assert.equal(call.url, '/api/alerts/42%20%2F%3F');
+  assert.equal(call.options.credentials, 'same-origin');
+  assert.equal(call.options.cache, 'no-store');
 });
 
 test('alert history includes only supplied cursors and preserves an empty snapshot', async () => {

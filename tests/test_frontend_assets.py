@@ -38,7 +38,7 @@ class FrontendAssetTests(unittest.TestCase):
         dashboard = Page(self.client.get("/").get_data(as_text=True))
         ids = [attrs["id"] for _, attrs in dashboard.elements if "id" in attrs]
         self.assertEqual(len(ids), len(set(ids)))
-        self.assertTrue({"bpm", "spo2", "battery", "voltage", "map", "locate", "alerts", "trackHours", "showTrack", "followGps", "copyCoords", "googleMaps", "basemapSource", "reloadMap", "mapStatus"}.issubset(ids))
+        self.assertTrue({"bpm", "spo2", "battery", "voltage", "map", "locate", "alerts", "trackHours", "showTrack", "followGps", "copyCoords", "googleMaps", "basemapSource", "reloadMap", "mapStatus", "eventLocation", "eventGoogleMaps", "closeEventLocation"}.issubset(ids))
         self.assertTrue(any(tag == "form" and attrs.get("action") == "/logout" and attrs.get("method") == "post" for tag, attrs in dashboard.elements))
         history = Page(self.client.get("/history").get_data(as_text=True))
         for page in (login, dashboard, history):
@@ -61,7 +61,7 @@ class FrontendAssetTests(unittest.TestCase):
 
     def test_every_local_es_module_import_has_a_javascript_response(self):
         self.client.post("/login", data={"password": "assets-test-admin"})
-        self.check_modules("/", "/static/js/app.js", 10)
+        self.check_modules("/", "/static/js/app.js", 11)
         self.check_modules("/history", "/static/js/history.js", 4)
 
     def check_modules(self, url, expected_entry, count):

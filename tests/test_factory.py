@@ -74,6 +74,7 @@ class FactoryTests(unittest.TestCase):
             ("/static/<path:filename>", "GET"), ("/api/device/telemetry", "POST"),
             ("/api/device/command", "GET"), ("/api/status", "GET"), ("/api/track", "GET"),
             ("/api/command", "POST"), ("/api/dashboard", "GET"), ("/api/alerts", "GET"),
+            ("/api/alerts/<reading_id>", "GET"),
         })
 
     def test_unusual_json_returns_400_without_saving_readings(self):

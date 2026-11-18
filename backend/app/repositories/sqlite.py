@@ -85,6 +85,11 @@ class SQLiteRepository:
             result.pop("history")
         return result
 
+    def alert_by_id(self, identifier):
+        with self.connect() as db:
+            row = db.execute(f"SELECT * FROM readings WHERE id=? AND {EVENT_SQL}", (identifier,)).fetchone()
+        return dict(row) if row else None
+
     def alert_page(self, snapshot=None, before=None, after=None):
         clauses, parameters = [EVENT_SQL], []
         for operator, value in (("<=", snapshot), ("<", before), (">", after)):

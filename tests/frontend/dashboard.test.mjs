@@ -42,6 +42,10 @@ test('complete composition renders SOS and measurements even when map library is
   assert.equal(root.getElementById('bpm').textContent, '72');
   assert.equal(root.getElementById('alerts').children[0].children[0].textContent, 'Nhấn nút SOS');
   assert.match(root.getElementById('map').textContent, /Bản đồ chưa tải được/);
+  await root.getElementById('alerts').children[0].emit('click');
+  assert.equal(root.getElementById('eventLocation').hidden, false);
+  assert.match(root.getElementById('eventLocationMessage').textContent, /Không có tọa độ GPS/);
+  assert.equal(root.getElementById('bpm').textContent, '72');
   assert.equal([...timers.intervals.values()][0].milliseconds, 5000);
   controller.stop();
   assert.equal(timers.intervals.size, 0);

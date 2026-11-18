@@ -13,6 +13,8 @@ Nếu chưa nhận bản tin từ thiết bị, trang web sẽ báo **Chưa có 
 
 Thanh điều hướng bên trái có **Trang chủ** và **Lịch sử** (màn hình nhỏ hiển thị ở phía trên). Trang chủ giữ số đo trực tiếp và tối đa 8 sự kiện mới nhất. Lịch sử có 20 sự kiện mỗi trang: **Sau →** xem cũ hơn, **← Trước** quay về mới hơn, **Về mới nhất** cập nhật lại từ đầu. Các số đo trong bảng là số đo được lưu cùng sự kiện đó.
 
+Bấm một cảnh báo ở Trang chủ hoặc tên sự kiện/tọa độ trong Lịch sử để xem vị trí đã lưu. Sự kiện có GPS được đánh dấu màu cam trên bản đồ, tách khỏi ghim vị trí mới nhất của thiết bị. Nếu mục đó ghi **Không có GPS fix**, web chỉ báo chưa có tọa độ tại thời điểm sự kiện. Bấm **Đóng** để bỏ điểm đang chọn hoặc **Về vị trí hiện tại** để xem ghim thiết bị.
+
 Sau lần cập nhật có tính năng Lịch sử, dừng web/thiết bị, chạy **Kiem-tra-lich-su.cmd**, đợi **KIEM TRA LICH SU DAT** rồi mở web lại. Thử truy vấn dùng database tạm trên Atlas và tự dọn sau khi chạy; công cụ chỉ bổ sung index vào database đang dùng. Không cần nạp lại ESP32 cho thay đổi giao diện này. Xem [hướng dẫn lịch sử](docs/alert-history.md).
 
 Máy này hiện dùng Python, Flask và MongoDB Atlas với database `iot_sos`. Thư viện Python nằm trong `.venv`; không cần cài MongoDB server trên máy để dùng Atlas. Bản SQLite cũ vẫn được giữ, còn dữ liệu nhận sau khi chuyển được lưu trên Atlas. Node.js chỉ phục vụ kiểm thử JavaScript.

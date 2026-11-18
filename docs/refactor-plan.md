@@ -162,4 +162,12 @@ Firmware sẽ được chia module trong một đợt riêng sau khi web/databas
 - 27 kiểm thử JavaScript cùng 3 kiểm thử tài nguyên HTML/import đã đạt; kiểm tra file dự kiến đưa vào Git và `git diff --check` đạt.
 - Chủ dự án đã xác nhận bản đồ thật hiển thị rõ và phóng to/thu nhỏ ổn định ngày 18/11/2026. Phần sửa nền đã hoàn tất; thử GPS ngoài trời vẫn giữ lịch hẹn riêng.
 
+## Xem vị trí của từng sự kiện
+
+- Danh sách cảnh báo Trang chủ có thể bấm; bảng Lịch sử có liên kết tên sự kiện/tọa độ về bản đồ Trang chủ. Sự kiện cũ được đọc theo ID qua API admin mới, không bị giới hạn bởi danh sách 8 mục hoặc khoảng lịch sử GPS.
+- Điểm màu cam và popup dùng đúng tọa độ/thời gian đã lưu; độc lập với ghim GPS mới nhất và đường đi. Sự kiện thiếu GPS hiển thị thông báo, không mượn tọa độ khác. Khung có nút đóng và liên kết Google Maps khi có tọa độ.
+- Bộ kiểm tra đạt: 126 kiểm thử Python, 35 kiểm thử JavaScript; một ca transaction Atlas được bỏ qua ở lượt cục bộ như trước. Đã thử hai repository, dữ liệu thiếu/0, sự kiện cũ, xác thực/ID sai, giữ điểm sự kiện khi GPS mới đến, chống phản hồi muộn và HTML cũ còn trong cache.
+- Thay đổi chỉ thêm API đọc và giao diện; không đổi schema/index, dữ liệu, firmware hoặc cấu hình riêng. Không tạo số đo thử trong database ứng dụng.
+- Chủ dự án đã mở lại web và xác nhận thao tác mở đúng thông tin sự kiện từ Trang chủ và Lịch sử trên trình duyệt thật ngày 18/11/2026. Tính năng đã hoàn tất kiểm tra phần mềm và giao diện. Hiển thị điểm có GPS được kiểm thử bằng dữ liệu mô phỏng; thử tọa độ thiết bị ngoài trời vẫn là bước riêng đã hẹn.
+
 Mỗi giai đoạn kết thúc bằng cập nhật file này, kết quả kiểm tra và commit riêng. Ghi rõ phần chưa hoàn thành để tiếp tục ở phiên sau.

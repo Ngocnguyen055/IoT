@@ -26,6 +26,7 @@ export function createApi({fetchImpl = globalThis.fetch.bind(globalThis), onUnau
 
   return {
     status: () => request('/api/dashboard', 'Không thể đọc API'),
+    alert: identifier => request(`/api/alerts/${encodeURIComponent(identifier)}`, 'Không thể đọc sự kiện'),
     alerts: (parameters = {}) => {
       const query = new URLSearchParams();
       for (const name of ['snapshot', 'before', 'after']) {

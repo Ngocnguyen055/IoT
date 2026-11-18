@@ -1,4 +1,4 @@
-import {formatTime} from './format.js';
+import {coordinates, formatTime} from './format.js';
 
 const TITLES = {
   button: 'Nhấn nút SOS',
@@ -9,7 +9,7 @@ const TITLES = {
 
 export const eventTitle = event => TITLES[event] || event;
 
-export function createAlertsView(root) {
+export function createAlertsView(root, {onSelect = () => {}} = {}) {
   const container = root.getElementById('alerts');
   return {
     render(alerts) {
@@ -19,12 +19,14 @@ export function createAlertsView(root) {
         return;
       }
       for (const alert of alerts) {
-        const box = root.createElement('div');
-        box.className = 'event';
+        const box = root.createElement('button');
+        box.type = 'button';
+        box.className = 'event event-button';
         const title = root.createElement('b');
         title.textContent = eventTitle(alert.event);
         const details = root.createElement('small');
-        details.textContent = formatTime(alert.ts) + (alert.lat == null ? ' · Không có GPS fix' : ' · Có tọa độ');
+        details.textContent = formatTime(alert.ts) + (coordinates(alert) ? ' · Xem vị trí trên bản đồ' : ' · Không có GPS fix');
+        box.addEventListener('click', () => onSelect(alert));
         box.append(title, details);
         container.append(box);
       }

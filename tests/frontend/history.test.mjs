@@ -25,6 +25,8 @@ test('history renders stored measurements, zero coordinates and safe device text
   assert.equal(cells[4].textContent, '—');
   assert.equal(cells[5].textContent, '0 %');
   assert.equal(cells[6].textContent, '0.00000, 0.00000');
+  assert.equal(cells[1].children[0].href, '/?event=90#eventLocation');
+  assert.equal(cells[6].children[0].href, '/?event=90#eventLocation');
   assert.equal(element('historyPrevious').disabled, true);
   assert.equal(element('historyNext').disabled, false);
 });

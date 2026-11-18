@@ -10,6 +10,16 @@ Bảng lịch sử gồm SOS (`button`), nhịp tim cao (`high_bpm`), SpO₂ th�
 
 Trang Lịch sử không polling. Nó chỉ lấy dữ liệu khi mở trang hoặc bấm nút; khi mạng lỗi, bảng và vị trí trang đang xem được giữ lại. Màn hình nhỏ chuyển điều hướng lên trên và cho phép cuộn ngang bảng.
 
+## Xem vị trí của một sự kiện
+
+Bấm một mục trong **Cảnh báo mới nhất**, hoặc bấm tên sự kiện/tọa độ trong bảng **Lịch sử**. Web mở khung thông tin của sự kiện trên Trang chủ. Liên kết từ Lịch sử có dạng `/?event=<id>#eventLocation`; backend đọc đúng sự kiện theo ID, nên vẫn xem được mục cũ ngoài danh sách Trang chủ.
+
+Nếu có GPS, bản đồ định tâm vào tọa độ đã lưu và đánh dấu **điểm màu cam**, kèm popup tên sự kiện, thời gian, thiết bị và tọa độ. Có thể mở chính vị trí này trên Google Maps. Ghim vị trí mới nhất của thiết bị tiếp tục cập nhật riêng; bản tin mới không tự chuyển khung nhìn khỏi sự kiện đang xem. Đổi nền hoặc tải lại ảnh bản đồ giữ nguyên cả hai loại điểm và hành trình. Bấm **Đóng** để bỏ điểm sự kiện; **Về vị trí hiện tại** vẫn định tâm vào ghim thiết bị.
+
+Nếu sự kiện ghi **Không có GPS fix**, khung thông tin giải thích rằng chưa có tọa độ tại thời điểm đó; không đặt điểm trên bản đồ và không mượn vị trí mới nhất để đại diện cho cảnh báo cũ. Những sự kiện thiếu GPS từ trước sẽ không tự có vị trí sau khi GPS hoạt động trở lại. Không cần nạp firmware hoặc chuyển dữ liệu cho tính năng này.
+
+Chủ dự án đã xác nhận mở đúng thông tin sự kiện ở cả Trang chủ và Lịch sử trên trình duyệt thật ngày 18/11/2026. Tọa độ có GPS, số 0, thiếu GPS và việc giữ điểm sự kiện khi vị trí mới đến đã được kiểm thử bằng dữ liệu mô phỏng; không tạo dữ liệu thử trong database ứng dụng. Thử GPS thiết bị ngoài trời vẫn là bước riêng.
+
 ## Vì sao truy vấn không cần quét hết telemetry
 
 Backend dùng danh sách loại sự kiện cụ thể và partial index chỉ chứa các dòng đó. Dù collection có nhiều telemetry, index lịch sử chỉ chứa sự kiện. Phân trang dùng điều kiện ID thay cho bỏ qua hàng chục nghìn dòng bằng `skip`:

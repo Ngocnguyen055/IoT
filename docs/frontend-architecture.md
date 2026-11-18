@@ -17,6 +17,7 @@ frontend/
       api.js                     HTTP, cookie, lỗi và chuyển về đăng nhập khi 401
       dashboard.js               Số đo, trạng thái kết nối, LOCATE và polling
       alerts.js                  Danh sách cảnh báo
+      event-location.js          Chọn sự kiện, đọc liên kết lịch sử và hiển thị vị trí đã lưu
       history.js                 Bảng lịch sử và điều khiển phân trang cursor
       location.js                Vị trí GPS cuối, Google Maps và sao chép tọa độ
       map.js                     Leaflet, marker và chia đoạn hành trình
@@ -53,6 +54,7 @@ Factory Flask đã chuyển đường dẫn tài nguyên đến `frontend/templa
 - Khi lịch sử đang tải, các nút tạm khóa để tránh gửi yêu cầu trùng. Lỗi mạng giữ nguyên bảng/trang cũ và cho phép thử lại. Nội dung từ API được gán bằng `textContent`.
 - Khi thư viện bản đồ không tải được, số đo/cảnh báo và tọa độ vẫn hoạt động; khung bản đồ hiển thị thông báo ngắn.
 - Tọa độ null không bị chuyển thành vị trí 0,0; tọa độ 0,0 thật vẫn được chấp nhận.
+- Bấm cảnh báo mở vị trí đã lưu của sự kiện; Lịch sử có liên kết về Trang chủ theo ID. Điểm sự kiện màu cam độc lập với ghim GPS mới nhất và đường đi. Thiếu GPS được thông báo rõ, không thay bằng tọa độ hiện tại. Khi đổi lựa chọn hoặc đóng khung, phản hồi đọc sự kiện cũ đến muộn không mở lại/ghi đè lựa chọn mới. Chi tiết ở [vị trí sự kiện](alert-history.md#xem-vị-trí-của-một-sự-kiện).
 
 ## Kiểm tra
 

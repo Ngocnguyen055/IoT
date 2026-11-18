@@ -118,6 +118,12 @@ Khi có dữ liệu, `items` có cùng trường như một dòng số đo của
 
 `before` và `after` loại trừ nhau; phải có snapshot đi cùng. Snapshot là số nguyên 0…2⁶³−1; cursor là số nguyên 1…snapshot, viết bằng chữ số ASCII. Tham số sai trả 400. `has_previous`/`has_next` quyết định nút điều hướng; cursor không áp dụng trả null. Không trả tổng số trang và không chạy `count_documents` cho mỗi lượt xem. Xem [thiết kế truy vấn](alert-history.md).
 
+## `GET /api/alerts/<reading_id>`
+
+Dùng session admin. Đọc đúng một sự kiện theo ID, kể cả khi đã nằm ngoài 8 sự kiện của Trang chủ hoặc khoảng lịch sử GPS đang chọn. Trả 200, `{"item": <dòng số đo>}` với cùng trường như `/api/status`. Chỉ chấp nhận bốn loại sự kiện của `/api/alerts`; ID không tồn tại hoặc trỏ tới telemetry trả 404 JSON. ID phải là số nguyên ASCII 1…2⁶³−1; sai định dạng/phạm vi trả 400. Khóa thiết bị không thay thế được session admin.
+
+Tọa độ và thời gian là giá trị đã lưu cùng sự kiện. Khi lat/lon null, API giữ null; không thay bằng vị trí mới nhất. MongoDB đọc theo khóa `_id`, SQLite đọc theo khóa chính `id`; không tải toàn bộ lịch sử để tìm sự kiện. Đây là API chỉ đọc, không tạo bản tin, không sửa lệnh thiết bị và không yêu cầu schema/index mới.
+
 ## `GET /api/track?device_id=ngoc-01&hours=24`
 
 Dùng session admin. `device_id` mặc định `ngoc-01`, dài 1–64; `hours` là số nguyên 1–168, mặc định 24. Sai tham số trả HTTP 400.

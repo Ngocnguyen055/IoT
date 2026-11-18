@@ -54,7 +54,7 @@ export function timersFixture() {
 }
 
 export function leafletFixture() {
-  const calls = {views: [], markers: [], lines: [], circles: [], clears: 0, tiles: [], resizes: [], maxZooms: []};
+  const calls = {views: [], markers: [], lines: [], circles: [], circleLayers: [], clears: 0, tiles: [], resizes: [], maxZooms: []};
   const mapEvents = new Map();
   const map = {
     setView(position, zoom) { calls.views.push({position, zoom}); return this; },
@@ -63,7 +63,8 @@ export function leafletFixture() {
     on(name, handler) { mapEvents.set(name, handler); return this; },
   };
   const layers = {addTo() { return this; }, clearLayers() { calls.clears++; }};
-  const layer = () => ({addTo() { return this; }, bindPopup() { return this; }});
+  const layer = () => ({addTo() { return this; }, bindPopup(content) { this.popup = content; return this; },
+    openPopup() { this.popupOpen = true; return this; }, remove() { this.removed = true; return this; }});
   return {
     calls, map, mapEvents,
     leaflet: {
@@ -87,7 +88,12 @@ export function leafletFixture() {
         return marker;
       },
       polyline(points) { calls.lines.push(points); return layer(); },
-      circleMarker(position) { calls.circles.push(position); return layer(); },
+      circleMarker(position, options) {
+        const circle = {...layer(), position, options};
+        calls.circles.push(position);
+        calls.circleLayers.push(circle);
+        return circle;
+      },
     },
   };
 }
@@ -97,7 +103,7 @@ export function statusFixture(changes = {}) {
     now: 1000,
     latest: {device_id: 'ngoc-01', ts: 1000, bpm: 72, spo2: 98, battery_pct: 0, battery_voltage: 4.004, gps_satellites: 0, current_ma: 0},
     last_location: null,
-    alerts: [{event: 'button', ts: 1000, lat: null}],
+    alerts: [{id: 1, device_id: 'ngoc-01', event: 'button', ts: 1000, lat: null, lon: null}],
     commands: [],
     ...changes,
   };

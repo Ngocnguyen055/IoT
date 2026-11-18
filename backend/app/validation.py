@@ -85,3 +85,12 @@ def alert_parameters(snapshot=None, before=None, after=None):
     if cursors and (values["snapshot"] is None or cursors[0] > values["snapshot"]):
         raise ValidationError("cursor requires a matching snapshot")
     return values
+
+
+def alert_identifier(value):
+    if not isinstance(value, str) or not 1 <= len(value) <= 19 or not value.isascii() or not value.isdecimal():
+        raise ValidationError("bad event_id")
+    identifier = int(value)
+    if not 1 <= identifier <= 2**63 - 1:
+        raise ValidationError("bad event_id")
+    return identifier
