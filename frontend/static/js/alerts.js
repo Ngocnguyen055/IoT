@@ -4,7 +4,7 @@ const TITLES = {
   button: 'Nhấn nút SOS',
   high_bpm: 'Cảnh báo BPM trên ngưỡng',
   low_spo2: 'Cảnh báo SpO₂ thấp',
-  remote: 'Định vị từ website',
+  remote: 'Yêu cầu định vị từ website',
 };
 
 export const eventTitle = event => TITLES[event] || event;

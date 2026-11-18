@@ -24,7 +24,8 @@ def main():
     print("Cau hinh: .env neu co; JSON cu duoc ho tro de tuong thich.\n", flush=True)
     try:
         with urllib.request.urlopen(url + "/login", timeout=1) as response:
-            already_running = "IOT - Ngọc" in response.read().decode("utf-8")
+            login_html = response.read().decode("utf-8")
+            already_running = 'data-app="iot-sos"' in login_html or "IOT - Ngọc" in login_html
     except (urllib.error.URLError, OSError):
         already_running = False
     if already_running:

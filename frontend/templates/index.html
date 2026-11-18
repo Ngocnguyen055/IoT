@@ -1,6 +1,6 @@
 {% extends "app_layout.html" %}
 
-{% block title %}IOT - Ngọc Dashboard{% endblock %}
+{% block title %}Trang chủ | Cảnh báo khẩn cấp{% endblock %}
 
 {% block external_styles %}
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -39,7 +39,7 @@
         </div>
         <div class="tracking-toolbar">
           <span id="trackingStatus" class="tracking-status">Đang tải hành trình…</span>
-          <label for="trackHours">Lịch sử:</label>
+          <label for="trackHours">Hành trình:</label>
           <select id="trackHours">
             <option value="1">1 giờ</option>
             <option value="6">6 giờ</option>
@@ -68,7 +68,7 @@
         </div>
         <div id="map" aria-label="Bản đồ vị trí và hành trình GPS"></div>
         <p id="mapStatus" class="map-status muted" role="status" aria-live="polite">Đang tải nền bản đồ…</p>
-        <p class="muted note">Theo dõi gần thời gian thực: website kiểm tra tọa độ mới mỗi 5 giây; tốc độ thực tế tùy chu kỳ gửi của ESP32 và mạng 4G.</p>
+        <p class="muted note">Website kiểm tra dữ liệu mới nhất mỗi 5 giây. ESP32 gửi dữ liệu định kỳ khoảng mỗi 15 giây; tốc độ thực tế phụ thuộc kết nối 4G.</p>
         <div class="location-box">
           <div class="location-header">
             <b>Vị trí GPS cuối cùng đã ghi nhận</b>
